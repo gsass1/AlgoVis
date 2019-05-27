@@ -1,10 +1,12 @@
 import List from './List.js'
-import Other from './Other.js'
+import Tree from './Tree.js'
 import Interpreter from 'js-interpreter'
 import './styles/main.scss'
 
 let list = new List({size: 5, color: "#ff0000"});
 list.shuffle();
+
+let tree = new Tree({name: "Tree"});
 
 function mainLoop() {
   let canvas = document.getElementById("canvas")
@@ -16,6 +18,7 @@ function mainLoop() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   list.render({x: 200, y: 150}, ctx);
+  tree.render({x: 200, y: 400}, ctx);
 
   requestAnimationFrame(mainLoop);
 }

@@ -1241,7 +1241,7 @@ clone-deep@^2.0.1:
     kind-of "^6.0.0"
     shallow-clone "^1.0.0"
 
-"clone@github:aminmarashi/clone#d97b4f":
+clone@aminmarashi/clone#d97b4f:
   version "2.1.1"
   resolved "https://codeload.github.com/aminmarashi/clone/tar.gz/d97b4f0ff3d3afebcaaf4a2ecc9c50fbce914900"
 
