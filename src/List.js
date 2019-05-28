@@ -2,9 +2,8 @@ import Struct from './Struct.js'
 import Util from './Util.js'
 
 const DIRTY_TIME = 1.0;
-const SWAPPING_TIME = 1.0;
+const SWAPPING_TIME = 0.3;
 
-const COLOR = { r: 255, g: 0, b: 0 };
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 class ArrayData {
@@ -73,6 +72,8 @@ class List extends Struct {
       this.arrayData[i] = new ArrayData();
       this.array[i] = 0;
     }
+
+    this.shuffle();
   }
 
   tick(dt) {
@@ -118,7 +119,7 @@ class List extends Struct {
 
   shuffle() {
     for(let i = 0; i < this.size; ++i) {
-      this.array[i] = Math.floor(Math.random()*100);
+      this.array[i] = Math.ceil(Math.random()*100);
     }
   }
 

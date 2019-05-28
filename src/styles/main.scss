@@ -1,8 +1,10 @@
-$color:  red;
-
 * {
   margin: 0;
   padding: 0;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 html, body {
@@ -10,13 +12,30 @@ html, body {
   height: 100%;
 }
 
+.nav {
+  height: 70px;
+  background: #3e388a;
+  padding: 10px 0 10px 20px;
+  box-sizing: border-box;
+}
+
+.nav__logo {
+  height: 50px;
+  float: left;
+}
+
+.nav__brand {
+  display: inline-block;
+  color: #fff;
+  position: relative;
+  width: 100px;
+  left: 20px;
+  top: 10px;
+}
+
 #algovis {
   display: flex;
   height: 100%;
-}
-
-h1 {
-  color: $color;
 }
 
 #canvas {

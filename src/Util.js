@@ -16,5 +16,12 @@ export default {
     },
     colorToCSS: (color) => {
         return `rgb(${Math.floor(color.r)}, ${Math.floor(color.g)}, ${Math.floor(color.b)})`
+    },
+    randomColor: () => {
+        return {
+            r: Math.floor(Math.random()*255),
+            g: Math.floor(Math.random()*255),
+            b: Math.floor(Math.random()*255),
+        }
     }
 };
