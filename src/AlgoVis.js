@@ -172,6 +172,7 @@ class AlgoVis {
         this.objects = [];
         this.interpreter = null;
         this.running = false;
+        document.getElementById("varTableBody").innerHTML = "";
     }
 
     setupInterpreter() {
@@ -201,7 +202,13 @@ class AlgoVis {
             }
             createSelection(start, end);
 
-            var stateStack = this.interpreter.stateStack[0];
+            /* Find the last state stack the a scope.properties property */
+            for(var i = this.interpreter.stateStack.length - 1; i >= 0; --i) {
+                var stateStack = this.interpreter.stateStack[i];
+                if (stateStack.scope && stateStack.scope.properties) {
+                    break;
+                }
+            }
             if (stateStack.scope && stateStack.scope.properties) {
                 for (var key in stateStack.scope.properties) {
                     var value = stateStack.scope.properties[key];
