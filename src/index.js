@@ -5,7 +5,7 @@ import Tree from './Tree.js'
 
 import './styles/main.scss'
 
-const INTERPRETER_SPEED = 100;
+const INTERPRETER_SPEED = 50;
 
 let list = new List({size: 5, color: { r: 255, g: 255, b: 255 }});
 list.shuffle();
@@ -62,6 +62,37 @@ let examples = [
       "    }\n" +
       "  }\n" +
       "}"
+  },
+  {
+    name: "quicksort",
+    code: "var list = listCreate('List', 10);\n" +
+      "\n" +
+      "function quicksort(begin, end) {\n" +
+      "  if (end > begin) {\n" +
+      "    var pivot = listGet(list, Math.floor((begin + end) / 2));\n" +
+      "    var left = begin;\n" +
+      "    var right = end;\n" +
+      "\n" +
+      "    listSwap(list, begin, Math.floor((begin + end) / 2));\n" +
+      "    pivot = listGet(list, begin);\n" +
+      "\n" +
+      "    while (left < right) {\n" +
+      "        if (listGet(list, left) <= pivot) {\n" +
+      "            left++;\n" +
+      "        } else {\n" +
+      "            while (left < --right && listGet(list, right) >= pivot);\n" +
+      "            listSwap(list, left, right);\n" +
+      "        }\n" +
+      "    }\n" +
+      "\n" +
+      "    left--;\n" +
+      "    listSwap(list, begin, left);\n" +
+      "    quicksort(begin, left);\n" +
+      "    quicksort(right, end);\n" +
+      "  }\n" +
+      "}\n" +
+      "\n" +
+      "quicksort(0, listLength(list));\n"
   }
 ];
 

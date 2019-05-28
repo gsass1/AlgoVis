@@ -50,6 +50,10 @@ const createInterpreter = (algovis, code) => {
             return interp.createPrimitive(algovis.getObject(name.data).size);
         }));
 
+        interp.setProperty(scope, 'listLength', interp.createNativeFunction((name, value) => {
+            return interp.createPrimitive(algovis.getObject(name.data).size);
+        }));
+
         /* Binary tree functions */
         interp.setProperty(scope, 'treeCreate', interp.createNativeFunction((name) => {
             algovis.addObject(new Tree({name: name.data, color: Util.randomColor()}));
