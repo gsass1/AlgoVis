@@ -57,7 +57,12 @@ const createInterpreter = (algovis, code) => {
         }));
 
         interp.setProperty(scope, 'treeRoot', interp.createNativeFunction((name) => {
-            return interp.createPrimitive(algovis.getObject(name.data).root.ref);
+            const tree = algovis.getObject(name.data);
+            const node = tree.root;
+
+            node.touch();
+
+            return interp.createPrimitive(node.ref);
         }));
 
         interp.setProperty(scope, 'nodeLeft', interp.createNativeFunction((nodeRef) => {
@@ -66,10 +71,11 @@ const createInterpreter = (algovis, code) => {
             const node = tree.getNodeByRef(nodeRef.data);
 
             if(node.left) {
+                node.left.touch();
                 return interp.createPrimitive(node.left.ref);
             }
 
-            return -1;
+            return interp.createPrimitive(-1);
         }));
 
         interp.setProperty(scope, 'nodeRight', interp.createNativeFunction((nodeRef) => {
@@ -78,10 +84,11 @@ const createInterpreter = (algovis, code) => {
             const node = tree.getNodeByRef(nodeRef.data);
 
             if(node.right) {
+                node.right.touch();
                 return interp.createPrimitive(node.right.ref);
             }
 
-            return -1;
+            return interp.createPrimitive(-1);
         }));
 
         interp.setProperty(scope, 'nodeValue', interp.createNativeFunction((nodeRef) => {
@@ -89,7 +96,27 @@ const createInterpreter = (algovis, code) => {
             const tree = algovis.getObject(objName);
             const node = tree.getNodeByRef(nodeRef.data);
 
+            node.touch();
+
             return interp.createPrimitive(node.value);
+        }));
+
+        interp.setProperty(scope, 'nodeAddLeft', interp.createNativeFunction((nodeRef, value) => {
+            const objName = getTreeFromNodeRef(nodeRef.data);
+            const tree = algovis.getObject(objName);
+            const node = tree.getNodeByRef(nodeRef.data);
+
+            node.left = tree.createNode({ value: value });
+            return interp.createPrimitive(node.left.ref);
+        }));
+
+        interp.setProperty(scope, 'nodeAddRight', interp.createNativeFunction((nodeRef, value) => {
+            const objName = getTreeFromNodeRef(nodeRef.data);
+            const tree = algovis.getObject(objName);
+            const node = tree.getNodeByRef(nodeRef.data);
+
+            node.right = tree.createNode({ value: value });
+            return interp.createPrimitive(node.right.ref);
         }));
     })
 }
@@ -199,7 +226,7 @@ class AlgoVis {
 
     render(ctx) {
         let pos = {
-            x: 200,
+            x: 400,
             y: 200,
         }
 

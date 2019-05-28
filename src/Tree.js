@@ -1,4 +1,9 @@
 import Struct from './Struct.js'
+import Util from './Util.js'
+
+const DIRTY_TIME = 1.0;
+
+const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 class Node {
     constructor(props) {
@@ -6,13 +11,40 @@ class Node {
         this.value = props.value || 0;
         this.left = props.left || null;
         this.right = props.right || null;
+        this.tree = props.tree;
+        this.dirty = false;
+        this.dirtyTicks = 0;
+    }
+
+    tick(dt) {
+        if(this.dirty) {
+            this.dirtyTicks -= dt;
+            if(this.dirtyTicks <= 0) {
+                this.dirty = false;
+            }
+        }
+    }
+
+    getDirtyPercentage() {
+        return 1.0 - this.dirtyTicks / DIRTY_TIME;
+    }
+
+    touch() {
+        this.dirty = true;
+        this.dirtyTicks = DIRTY_TIME;
     }
 
     render(pos, ctx) {
         const size = 40;
         const fontSize = 12;
 
-        ctx.fillStyle = "#ff0000";
+        if(this.dirty) {
+            var color = Util.lerpColor(DIRTYCOLOR, this.tree.color, this.getDirtyPercentage());
+        } else {
+            var color = this.tree.color;
+        }
+
+        ctx.fillStyle = Util.colorToCSS(color);
         ctx.fillRect(pos.x, pos.y, size, size);
 
         //ctx.beginPath();
@@ -35,7 +67,7 @@ class Node {
             ctx.lineTo(leftPos.x+size/2, leftPos.y+size/2);
             ctx.closePath();
 
-            ctx.strokeStyle = "#ff0000";
+            ctx.strokeStyle = Util.colorToCSS(this.tree.color);
             ctx.stroke();
 
             this.left.render(leftPos, ctx);
@@ -52,7 +84,7 @@ class Node {
             ctx.lineTo(rightPos.x+size/2, rightPos.y+size/2);
             ctx.closePath();
 
-            ctx.strokeStyle = "#ff0000";
+            ctx.strokeStyle = Util.colorToCSS(this.tree.color);
             ctx.stroke();
 
             this.right.render(rightPos, ctx);
@@ -64,6 +96,7 @@ class Tree extends Struct {
     constructor(props) {
         super(props);
 
+        this.color = props.color || Util.randomColor();
         this.refCounter = 0;
         this.name = props.name || "Tree";
 
@@ -83,7 +116,12 @@ class Tree extends Struct {
 
     createNode(props) {
         props.ref = this.name + "-" + this.refCounter++;
-        return new Node(props);
+        props.tree = this;
+
+        var node = new Node(props);
+        node.touch();
+
+        return node;
     }
 
     getNodeByRef(ref) {
@@ -113,7 +151,18 @@ class Tree extends Struct {
     }
 
     tick(dt) {
+        this.tickNode(dt, this.root);
+    }
 
+    tickNode(dt, node) {
+        if(node === null || node === undefined) {
+            return;
+        }
+
+        node.tick(dt);
+
+        this.tickNode(dt, node.left);
+        this.tickNode(dt, node.right);
     }
 
     render(pos, ctx) {

@@ -14,6 +14,7 @@ export default {
             b: lerpf(a.b, b.b, t),
         }
     },
+
     colorToCSS: (color) => {
         return `rgb(${Math.floor(color.r)}, ${Math.floor(color.g)}, ${Math.floor(color.b)})`
     },
