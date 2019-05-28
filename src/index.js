@@ -5,7 +5,7 @@ import Tree from './Tree.js'
 
 import './styles/main.scss'
 
-const INTERPRETER_SPEED = 50;
+const INTERPRETER_SPEED = 10;
 
 let list = new List({size: 5, color: { r: 255, g: 255, b: 255 }});
 list.shuffle();

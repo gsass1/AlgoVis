@@ -1,8 +1,9 @@
 import Struct from './Struct.js'
 import Util from './Util.js'
+import Audio from './Audio';
 
 const DIRTY_TIME = 1.0;
-const SWAPPING_TIME = 0.3;
+const SWAPPING_TIME = 0.1;
 
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
@@ -11,6 +12,7 @@ class ArrayData {
     this.dirty = false;
     this.dirtyTicks = 0;
     this.swapping = false;
+    this.value = 0;
 
     this.swappingTicks = 0;
     this.swappingTo = 0;
@@ -35,6 +37,10 @@ class ArrayData {
   }
 
   touch() {
+    const notes = ['C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2', 'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4']//, 'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5'];
+    const note = notes[Math.floor(this.value / 100.0 * notes.length)];
+
+    Audio.synth.triggerAttackRelease(note, '4n');
     this.dirty = true;
     this.dirtyTicks = DIRTY_TIME;
   }
@@ -87,7 +93,9 @@ class List extends Struct {
         /* Actually do the swap inside the internal array */
         var tmp = this.array[i];
         this.array[i] = this.array[data.swappingTo];
+        data.value = this.arrayData[data.swappingTo].value;
         this.array[data.swappingTo] = tmp;
+        this.arrayData[data.swappingTo].value = tmp;
 
         /* Stop the other ArrayData element reversing the swap */
         this.arrayData[data.swappingTo].stopSwapping();
@@ -120,6 +128,7 @@ class List extends Struct {
   shuffle() {
     for(let i = 0; i < this.size; ++i) {
       this.array[i] = Math.ceil(Math.random()*100);
+      this.arrayData[i].value = this.array[i];
     }
   }
 
