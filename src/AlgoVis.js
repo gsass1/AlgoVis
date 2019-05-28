@@ -201,7 +201,34 @@ class AlgoVis {
             }
             createSelection(start, end);
 
-            let step = this.interpreter.step();
+
+            console.log(this.interpreter.stateStack);
+            //var stateStack = this.interpreter.stateStack[this.interpreter.stateStack.length - 1];
+            var stateStack = this.interpreter.stateStack[0];
+            if (stateStack.scope && stateStack.scope.properties) {
+                console.log(stateStack.scope.properties);
+                for (var key in stateStack.scope.properties) {
+                    var value = stateStack.scope.properties[key];
+
+                    console.log(value.type);
+                    if (value.type == "number") {
+                        var elem = document.getElementById("var" + key);
+                        if (elem != null) {
+                            elem.innerHTML = "<td>" + key + "</td><td>" + value.data + "</td></tr>";
+                        } else {
+                            document.getElementById("varTableBody").innerHTML += "<tr id=var" + key + "><td>" + key + "</td><td>" + value.data + "</td></tr>";
+                        }
+                    }
+                }
+            }
+
+            try {
+                var step = this.interpreter.step();
+            } catch(e) {
+                alert(e);
+                this.running = false;
+            }
+
             if(!step) {
                 this.running = false;
             }

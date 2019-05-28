@@ -35,7 +35,7 @@ html, body {
 
 #algovis {
   display: flex;
-  height: 100%;
+  height: calc(100vh - 150px - 70px);
 }
 
 #canvas {
@@ -45,6 +45,7 @@ html, body {
 #code {
   flex: 1;
   background-color: #009688;
+  overflow: scroll;
 }
 
 #controlbtns {
@@ -57,11 +58,16 @@ html, body {
 
 #codearea {
   width: 100%;
-  height: 100%;
   border: none;
   background-color: #009688;
   color: #fff;
   font-size: 20px;
+}
+
+.footer {
+  height: 150px;
+  background: #ccc;
+  overflow: scroll;  
 }
 
 
