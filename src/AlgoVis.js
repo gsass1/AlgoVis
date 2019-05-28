@@ -10,10 +10,6 @@ const deepCopy = obj => {
     return JSON.parse(JSON.stringify(obj))
 };
 
-/**
- * 
- * @param {!String} ref 
- */
 const getTreeFromNodeRef = ref => {
     return ref.split("-")[0];
 }
@@ -128,7 +124,7 @@ const createInterpreter = (algovis, code) => {
 const createSelection = (start, end) => {
     var field = document.getElementById('codearea');
 
-    /*
+    
     for (; start >= 1; start--) {
         if (field.value[start] == '\r' || field.value[start] == '\n') {
             start++;
@@ -142,7 +138,7 @@ const createSelection = (start, end) => {
             break;
         }
     }
-    */
+    
 
     if (field.createTextRange) {
         var selRange = field.createTextRange();

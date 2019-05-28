@@ -63,6 +63,18 @@ let examples = [
       "}"
   },
   {
+    name: "insertionsort",
+    code: "var list = listCreate('List', 10);\n" +
+      "\n" +
+      "for (var i = 0; i < 10; i++) {\n" +
+      "  var j = i;\n" +
+      "  while (j > 0 && listGet(list, j) < listGet(list, j - 1)) {\n" +
+      "    listSwap(list, j, j - 1);\n" +
+      "    j--;\n" +
+      "  }\n" +
+      "}"
+  },
+  {
     name: "quicksort",
     code: "var list = listCreate('List', 10);\n" +
       "\n" +
