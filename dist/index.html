@@ -7,7 +7,17 @@
     <nav class="nav">
       <img src="/logo.png" class="nav__logo"/>
       <h1 class="nav__brand">AlgoVis</h1>
-    </nav>
+      <div class="dropdown">
+        <button class="dropbtn">Examples</button>
+        <div class="dropdown-content">
+          <a class="dropdown-category" href="#">Lists</a>
+          <a class="example-btn" data-example="bubblesort" href="#">Bubblesort</a>
+          <a class="example-btn" data-example="quicksort" href="#">Quicksort</a>
+          <a class="dropdown-category" href="#">Trees</a>
+          <a class="dropdown-category" href="#">Graphs</a>
+        </div>
+      </div> 
+        </nav>
     <main id="algovis">
       <canvas id="canvas" width="1800" height="1000">
       </canvas>

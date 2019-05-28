@@ -47,6 +47,38 @@ document.getElementById("codeStep").onclick = e => {
   algovis.step();
 };
 
+let examples = [
+  {
+    name: "bubblesort",
+    code: "var l = listCreate('l', 10);\n" +
+      "\n" +
+      "//Bubble sort\n" +
+      "for (var i = 0; i < listSize(l) - 1; i++) {\n" +
+      "  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
+      "    var p = listGet(l, j);\n" +
+      "    var q = listGet(l, j + 1);\n" +
+      "    if (p > q) {\n" +
+      "      listSwap(l, j, j + 1);\n" +
+      "    }\n" +
+      "  }\n" +
+      "}"
+  }
+];
+
+const loadExample = (name) => {
+  examples.forEach((example) => {
+    if(example.name === name) {
+      document.getElementById("codearea").value = example.code;
+    }
+  });
+}
+
+document.querySelectorAll("a.example-btn").forEach(exampleBtn => {
+  exampleBtn.onclick = (e) => {
+    loadExample(exampleBtn.getAttribute("data-example"));
+  }
+});
+
 algovis.setupInterpreter();
 
 function mainLoop() {
