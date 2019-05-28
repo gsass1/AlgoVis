@@ -201,17 +201,12 @@ class AlgoVis {
             }
             createSelection(start, end);
 
-
-            console.log(this.interpreter.stateStack);
-            //var stateStack = this.interpreter.stateStack[this.interpreter.stateStack.length - 1];
             var stateStack = this.interpreter.stateStack[0];
             if (stateStack.scope && stateStack.scope.properties) {
-                console.log(stateStack.scope.properties);
                 for (var key in stateStack.scope.properties) {
                     var value = stateStack.scope.properties[key];
 
-                    console.log(value.type);
-                    if (value.type == "number") {
+                    if (key !== "Infinity" && key !== "NaN" && (value.type == "number" || value.type == "string")) {
                         var elem = document.getElementById("var" + key);
                         if (elem != null) {
                             elem.innerHTML = "<td>" + key + "</td><td>" + value.data + "</td></tr>";
