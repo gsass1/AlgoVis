@@ -47,6 +47,14 @@ html, body {
   background-color: #009688;
 }
 
+#controlbtns {
+  display: flex;
+
+  button {
+    flex: 1;
+  }
+}
+
 #codearea {
   width: 100%;
   height: 100%;

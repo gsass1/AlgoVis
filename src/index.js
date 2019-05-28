@@ -5,6 +5,8 @@ import Tree from './Tree.js'
 
 import './styles/main.scss'
 
+const INTERPRETER_SPEED = 10;
+
 let list = new List({size: 5, color: { r: 255, g: 255, b: 255 }});
 list.shuffle();
 
@@ -14,10 +16,36 @@ list.swap(0, 4);
 list.add(100);
 list.add(100);
 
-let defaultCode = "listCreate('l', 10);\nlistSwap('l', 0, 1);"
+let defaultCode = "var l = listCreate('l', 10);\n" +
+"\n" +
+"//Bubble sort\n" +
+"for (var i = 0; i < listSize(l) - 1; i++) {\n" +
+"  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
+"    var p = listGet(l, j);\n" +
+"    var q = listGet(l, j + 1);\n" +
+"    if (p > q) {\n" +
+"      listSwap(l, j, j + 1);\n" +
+"    }\n" +
+"  }\n" +
+"}";
+
 document.getElementById("codearea").value = defaultCode;
 
 let algovis = new AlgoVis();
+
+document.getElementById("codeRun").onclick = e => {
+  algovis.run();
+};
+
+document.getElementById("codePause").onclick = e => {
+  algovis.pause();
+};
+
+document.getElementById("codeStep").onclick = e => {
+  algovis.step();
+};
+
+algovis.setupInterpreter();
 
 function mainLoop() {
   let canvas = document.getElementById("canvas")
@@ -42,3 +70,14 @@ function mainLoop() {
 }
 
 mainLoop();
+
+
+function interpreterLoop() {
+  if(algovis && algovis.running) {
+    algovis.step();
+  }
+
+  setTimeout(interpreterLoop, INTERPRETER_SPEED);
+}
+
+interpreterLoop();

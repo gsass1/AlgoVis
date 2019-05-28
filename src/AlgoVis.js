@@ -4,11 +4,12 @@ import Util from './Util';
 
 let testCode = document.getElementById("codearea").value;
 
-const createInterpreter = (algovis) => {
-    return new Interpreter(testCode, (interp, scope) => {
+const createInterpreter = (algovis, code) => {
+    return new Interpreter(code, (interp, scope) => {
         /* List functions */
         interp.setProperty(scope, 'listCreate', interp.createNativeFunction((name, size) => {
             algovis.addObject(new List({name: name.data, size: size, color: Util.randomColor()}));
+            return name;
         }));
 
         interp.setProperty(scope, 'listGet', interp.createNativeFunction((name, i) => {
@@ -26,15 +27,94 @@ const createInterpreter = (algovis) => {
         interp.setProperty(scope, 'listAdd', interp.createNativeFunction((name, value) => {
             algovis.getObject(name.data).add(value);
         }));
+
+        interp.setProperty(scope, 'listSize', interp.createNativeFunction((name, value) => {
+            return interp.createPrimitive(algovis.getObject(name.data).size);
+        }));
     })
+}
+
+const createSelection = (start, end) => {
+    var field = document.getElementById('codearea');
+
+    /*
+    for (; start >= 1; start--) {
+        if (field.value[start] == '\r' || field.value[start] == '\n') {
+            start++;
+            break;
+        }
+    }
+
+
+    for (end = start; end < field.value.length; end++) {
+        if (field.value[end] == '\r' || field.value[end] == '\n') {
+            break;
+        }
+    }
+    */
+
+    if (field.createTextRange) {
+        var selRange = field.createTextRange();
+        selRange.collapse(true);
+        selRange.moveStart('character', start);
+        selRange.moveEnd('character', end);
+        selRange.select();
+    } else if (field.setSelectionRange) {
+        field.setSelectionRange(start, end);
+    } else if (field.selectionStart) {
+        field.selectionStart = start;
+        field.selectionEnd = end;
+    }
+    field.focus();
 }
 
 class AlgoVis {
     constructor(props) {
-        this.objects = [];
+        this.reset();
+    }
 
-        this.interpreter = createInterpreter(this);
-        this.interpreter.run();
+    createInterpreter() {
+        this.interpreter = createInterpreter(this, document.getElementById("codearea").value);
+    }
+
+    reset() {
+        this.objects = [];
+        this.interpreter = null;
+        this.running = false;
+    }
+
+    setupInterpreter() {
+        this.reset();
+        this.createInterpreter();
+    }
+
+    run() {
+        this.setupInterpreter();
+        this.running = true;
+    }
+
+    pause() {
+        this.running = false;
+    }
+
+    step() {
+        if (this.interpreter !== null) {
+            if (this.interpreter.stateStack.length) {
+                var node =
+                    this.interpreter.stateStack[this.interpreter.stateStack.length - 1].node;
+                var start = node.start;
+                var end = node.end;
+            } else {
+                var start = 0;
+                var end = 0;
+            }
+            createSelection(start, end);
+
+            let step = this.interpreter.step();
+            if(!step) {
+                this.running = false;
+            }
+        }
     }
 
     addObject(object) {
