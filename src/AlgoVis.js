@@ -75,7 +75,7 @@ const createInterpreter = (algovis, code) => {
             const node = tree.getNodeByRef(nodeRef.data);
 
             if(node.left) {
-                node.left.touch();
+                //node.left.touch();
                 return interp.createPrimitive(node.left.ref);
             }
 
@@ -88,7 +88,7 @@ const createInterpreter = (algovis, code) => {
             const node = tree.getNodeByRef(nodeRef.data);
 
             if(node.right) {
-                node.right.touch();
+                //node.right.touch();
                 return interp.createPrimitive(node.right.ref);
             }
 

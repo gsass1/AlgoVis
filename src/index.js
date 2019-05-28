@@ -50,9 +50,8 @@ document.getElementById("codeStep").onclick = e => {
 let examples = [
   {
     name: "bubblesort",
-    code: "var l = listCreate('l', 10);\n" +
+    code: "var l = listCreate('List', 10);\n" +
       "\n" +
-      "//Bubble sort\n" +
       "for (var i = 0; i < listSize(l) - 1; i++) {\n" +
       "  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
       "    var p = listGet(l, j);\n" +

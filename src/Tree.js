@@ -1,5 +1,6 @@
 import Struct from './Struct.js'
 import Util from './Util.js'
+import Audio from './Audio';
 
 const DIRTY_TIME = 1.0;
 
@@ -8,7 +9,8 @@ const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 class Node {
     constructor(props) {
         this.ref = props.ref;
-        this.value = props.value || 0;
+        //this.value = props.value || 0;
+        this.value = Math.ceil(Math.random()*100);
         this.left = props.left || null;
         this.right = props.right || null;
         this.tree = props.tree;
@@ -30,6 +32,7 @@ class Node {
     }
 
     touch() {
+        Audio.beep(this.value);
         this.dirty = true;
         this.dirtyTicks = DIRTY_TIME;
     }
@@ -119,13 +122,13 @@ class Tree extends Struct {
         props.tree = this;
 
         var node = new Node(props);
-        node.touch();
+        //node.touch();
 
         return node;
     }
 
     getNodeByRef(ref) {
-        return this._getNodeByRef(ref, this.root);
+       return this._getNodeByRef(ref, this.root);
     }
 
     _getNodeByRef(ref, node) {
