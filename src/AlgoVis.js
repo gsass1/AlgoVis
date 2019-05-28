@@ -1,11 +1,29 @@
 import Interpreter from 'js-interpreter'
 import List from './List';
 import Util from './Util';
+import Tree from './Tree';
 
 let testCode = document.getElementById("codearea").value;
 
+
+const deepCopy = obj => {
+    return JSON.parse(JSON.stringify(obj))
+};
+
+/**
+ * 
+ * @param {!String} ref 
+ */
+const getTreeFromNodeRef = ref => {
+    return ref.split("-")[0];
+}
+
 const createInterpreter = (algovis, code) => {
     return new Interpreter(code, (interp, scope) => {
+        interp.setProperty(scope, 'log', interp.createNativeFunction((msg) => {
+            console.log(msg);
+        }));
+
         /* List functions */
         interp.setProperty(scope, 'listCreate', interp.createNativeFunction((name, size) => {
             algovis.addObject(new List({name: name.data, size: size, color: Util.randomColor()}));
@@ -30,6 +48,48 @@ const createInterpreter = (algovis, code) => {
 
         interp.setProperty(scope, 'listSize', interp.createNativeFunction((name, value) => {
             return interp.createPrimitive(algovis.getObject(name.data).size);
+        }));
+
+        /* Binary tree functions */
+        interp.setProperty(scope, 'treeCreate', interp.createNativeFunction((name) => {
+            algovis.addObject(new Tree({name: name.data, color: Util.randomColor()}));
+            return name;
+        }));
+
+        interp.setProperty(scope, 'treeRoot', interp.createNativeFunction((name) => {
+            return interp.createPrimitive(algovis.getObject(name.data).root.ref);
+        }));
+
+        interp.setProperty(scope, 'nodeLeft', interp.createNativeFunction((nodeRef) => {
+            const objName = getTreeFromNodeRef(nodeRef.data);
+            const tree = algovis.getObject(objName);
+            const node = tree.getNodeByRef(nodeRef.data);
+
+            if(node.left) {
+                return interp.createPrimitive(node.left.ref);
+            }
+
+            return -1;
+        }));
+
+        interp.setProperty(scope, 'nodeRight', interp.createNativeFunction((nodeRef) => {
+            const objName = getTreeFromNodeRef(nodeRef.data);
+            const tree = algovis.getObject(objName);
+            const node = tree.getNodeByRef(nodeRef.data);
+
+            if(node.right) {
+                return interp.createPrimitive(node.right.ref);
+            }
+
+            return -1;
+        }));
+
+        interp.setProperty(scope, 'nodeValue', interp.createNativeFunction((nodeRef) => {
+            const objName = getTreeFromNodeRef(nodeRef.data);
+            const tree = algovis.getObject(objName);
+            const node = tree.getNodeByRef(nodeRef.data);
+
+            return interp.createPrimitive(node.value);
         }));
     })
 }

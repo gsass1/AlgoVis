@@ -29,7 +29,9 @@ let defaultCode = "var l = listCreate('l', 10);\n" +
 "  }\n" +
 "}";
 
-document.getElementById("codearea").value = defaultCode;
+if(document.getElementById("codearea").value === "") {
+  document.getElementById("codearea").value = defaultCode;
+}
 
 let algovis = new AlgoVis();
 
