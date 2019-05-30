@@ -1,4 +1,6 @@
-# AlgoVis
+<center>
+<h1>AlgoVis</h1>
+</center>
 
 AlgoVis is an algorithm visualizer designed to simulate complex algorithms using different data structures. It could have potential use in aiding computer science student's in their comprehension in algorithms and datastructure courses.
 
