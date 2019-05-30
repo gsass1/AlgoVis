@@ -31,6 +31,11 @@ html, body {
   width: 100px;
   left: 20px;
   top: 10px;
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 #algovis {

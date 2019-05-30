@@ -9,6 +9,7 @@ import './styles/main.scss'
 
 var INTERPRETER_DELAY = 5;
 var ZOOM = 1;
+var ASPECT_RATIO = 1;
 
 const BG_COLOR = "#000000";
 
@@ -87,20 +88,30 @@ canvas.addEventListener('mousemove', function(event) {
   }
 });
 
-canvas.addEventListener("wheel", function(event) {
-  const prevZoom = ZOOM;
+canvas.addEventListener("wheel", function(e) {
+  const {x, y, deltaY} = e;
+  const direction = deltaY > 0 ? -1 : 1;
+  const factor = 0.01;
+  const zoom = 1 * direction * factor;
 
-  if(event.deltaY > 0) {
-    ZOOM -= 0.1;
-    if(ZOOM < 0.1) {
-      ZOOM = 0.1;
-    }
-  } else {
-    ZOOM += 0.1;
+  const pos = {
+    x: event.pageX - canvas.offsetLeft,
+    y: event.pageY - canvas.offsetTop
   }
 
-  algovis.offset.x += ZOOM
-  algovis.offset.y += ZOOM
+
+  algovis.offset.x -= (pos.x-algovis.offset.x)/(ZOOM)*zoom;
+  algovis.offset.y -= (pos.y-algovis.offset.y)/(ZOOM)*zoom;
+
+  console.log(ZOOM);
+
+  ZOOM += zoom;
+
+  if(ZOOM < 0.1) {
+    ZOOM = 0.1;
+  }
+
+  Constants.SCALE = ASPECT_RATIO * ZOOM;
 });
 
 /* EXAMPLES */
@@ -224,8 +235,8 @@ function mainLoop() {
   //ctx.canvas.height = 1.5 * ctx.canvas.width;
   ctx.canvas.height = 1 * ctx.canvas.width;
 
-  Constants.SCALE = ctx.canvas.width/1280.0 * ZOOM;
-  //Constants.SCALE = 2;
+  ASPECT_RATIO = ctx.canvas.width/1280.0;
+  Constants.SCALE = ASPECT_RATIO * ZOOM;
 
   ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);

@@ -48,11 +48,13 @@ class Node {
   }
 
   getLeft() {
-    return this.children[0];
+    if(this.children.length >= 1) return this.children[0];
+    return null;
   }
 
   getRight() {
-    return this.children[1];
+    if(this.children.length >= 2) return this.children[1];
+    return null;
   }
 
   setLeft(node) {
@@ -60,7 +62,10 @@ class Node {
   }
 
   setRight(node) {
+    console.log("setRight");
+    console.log(this.children);
     this.children[1] = node;
+    console.log(this.children);
   }
 
   render(pos, ctx, depth) {
@@ -125,10 +130,13 @@ class Node {
     var x = -dist;
     var xd = dist*4.0/n;
 
-    this.children.forEach((child) => {
+    for(var i = 0; i < this.children.length; ++i) {
+      var child = this.children[i];
+
       if(child === null || child === undefined) {
-        return;
+        continue;
       }
+
       const childPos = {
         x: pos.x + x,
         y: pos.y + 80*Constants.SCALE
@@ -145,7 +153,7 @@ class Node {
       child.render(childPos, ctx, depth + 1);
 
       x += xd;
-    });
+    }
   }
 }
 
@@ -184,8 +192,6 @@ class Tree extends Struct {
     }
 
     var count = Math.ceil(Math.random() * maxChildCount);
-
-    console.log(count);
 
     while(count--) {
       node.addChild(this.createNode({ value: Math.floor(Math.random()*100) }));
