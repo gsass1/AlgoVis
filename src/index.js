@@ -3,6 +3,8 @@ import AlgoVis from './AlgoVis'
 import List from './List.js'
 import Tree from './Tree.js'
 
+import Constants from './Constants.js';
+
 import './styles/main.scss'
 
 const INTERPRETER_DELAY = 1;
@@ -48,59 +50,59 @@ let examples = [
   {
     name: "bubblesort",
     code: "var l = listCreate('List', 10);\n" +
-      "\n" +
-      "for (var i = 0; i < listSize(l) - 1; i++) {\n" +
-      "  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
-      "    var p = listGet(l, j);\n" +
-      "    var q = listGet(l, j + 1);\n" +
-      "    if (p > q) {\n" +
-      "      listSwap(l, j, j + 1);\n" +
-      "    }\n" +
-      "  }\n" +
-      "}"
+    "\n" +
+    "for (var i = 0; i < listSize(l) - 1; i++) {\n" +
+    "  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
+    "    var p = listGet(l, j);\n" +
+    "    var q = listGet(l, j + 1);\n" +
+    "    if (p > q) {\n" +
+    "      listSwap(l, j, j + 1);\n" +
+    "    }\n" +
+    "  }\n" +
+    "}"
   },
   {
     name: "insertionsort",
     code: "var list = listCreate('List', 10);\n" +
-      "\n" +
-      "for (var i = 0; i < 10; i++) {\n" +
-      "  var j = i;\n" +
-      "  while (j > 0 && listGet(list, j) < listGet(list, j - 1)) {\n" +
-      "    listSwap(list, j, j - 1);\n" +
-      "    j--;\n" +
-      "  }\n" +
-      "}"
+    "\n" +
+    "for (var i = 0; i < 10; i++) {\n" +
+    "  var j = i;\n" +
+    "  while (j > 0 && listGet(list, j) < listGet(list, j - 1)) {\n" +
+    "    listSwap(list, j, j - 1);\n" +
+    "    j--;\n" +
+    "  }\n" +
+    "}"
   },
   {
     name: "quicksort",
     code: "var list = listCreate('List', 10);\n" +
-      "\n" +
-      "function quicksort(begin, end) {\n" +
-      "  if (end > begin) {\n" +
-      "    var pivot = listGet(list, Math.floor((begin + end) / 2));\n" +
-      "    var left = begin;\n" +
-      "    var right = end;\n" +
-      "\n" +
-      "    listSwap(list, begin, Math.floor((begin + end) / 2));\n" +
-      "    pivot = listGet(list, begin);\n" +
-      "\n" +
-      "    while (left < right) {\n" +
-      "        if (listGet(list, left) <= pivot) {\n" +
-      "            left++;\n" +
-      "        } else {\n" +
-      "            while (left < --right && listGet(list, right) >= pivot);\n" +
-      "            listSwap(list, left, right);\n" +
-      "        }\n" +
-      "    }\n" +
-      "\n" +
-      "    left--;\n" +
-      "    listSwap(list, begin, left);\n" +
-      "    quicksort(begin, left);\n" +
-      "    quicksort(right, end);\n" +
-      "  }\n" +
-      "}\n" +
-      "\n" +
-      "quicksort(0, listLength(list));\n"
+    "\n" +
+    "function quicksort(begin, end) {\n" +
+    "  if (end > begin) {\n" +
+    "    var pivot = listGet(list, Math.floor((begin + end) / 2));\n" +
+    "    var left = begin;\n" +
+    "    var right = end;\n" +
+    "\n" +
+    "    listSwap(list, begin, Math.floor((begin + end) / 2));\n" +
+    "    pivot = listGet(list, begin);\n" +
+    "\n" +
+    "    while (left < right) {\n" +
+    "        if (listGet(list, left) <= pivot) {\n" +
+    "            left++;\n" +
+    "        } else {\n" +
+    "            while (left < --right && listGet(list, right) >= pivot);\n" +
+    "            listSwap(list, left, right);\n" +
+    "        }\n" +
+    "    }\n" +
+    "\n" +
+    "    left--;\n" +
+    "    listSwap(list, begin, left);\n" +
+    "    quicksort(begin, left);\n" +
+    "    quicksort(right, end);\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "quicksort(0, listLength(list));\n"
   }
 ];
 
@@ -124,8 +126,13 @@ function mainLoop() {
   let canvas = document.getElementById("canvas")
   let ctx = canvas.getContext("2d");
 
+  ctx.canvas.width = window.innerWidth/2;
+
   /* This is to keep the aspect ratio from fucking up */
-  ctx.canvas.height = 3*ctx.canvas.width/4;
+  //ctx.canvas.height = 1.5 * ctx.canvas.width;
+  ctx.canvas.height = 1 * ctx.canvas.width;
+
+  Constants.SCALE = ctx.canvas.width/1280.0;
 
   ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);

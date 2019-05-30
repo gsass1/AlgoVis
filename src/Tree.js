@@ -2,179 +2,246 @@ import Struct from './Struct.js'
 import Util from './Util.js'
 import Audio from './Audio';
 
-const DIRTY_TIME = 1.0;
+import Constants from './Constants';
 
+const DIRTY_TIME = 1.0;
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 class Node {
-    constructor(props) {
-        this.ref = props.ref;
-        //this.value = props.value || 0;
-        this.value = Math.ceil(Math.random()*100);
-        this.left = props.left || null;
-        this.right = props.right || null;
-        this.tree = props.tree;
+  constructor(props) {
+    this.ref = props.ref;
+    this.value = Math.ceil(Math.random()*100);
+    this.children = new Array(0);
+    this.left = props.left || null;
+    this.right = props.right || null;
+    //this.children.push(this.left);
+    //this.children.push(this.right);
+    this.tree = props.tree;
+    this.dirty = false;
+    this.dirtyTicks = 0;
+  }
+
+  addChild(node) {
+    this.children.push(node);
+  }
+
+  tick(dt) {
+    if(this.dirty) {
+      this.dirtyTicks -= dt;
+      if(this.dirtyTicks <= 0) {
         this.dirty = false;
-        this.dirtyTicks = 0;
+      }
+    }
+  }
+
+  getDirtyPercentage() {
+    return 1.0 - this.dirtyTicks / DIRTY_TIME;
+  }
+
+  touch() {
+    Audio.beep(this.value);
+    this.dirty = true;
+    this.dirtyTicks = DIRTY_TIME;
+  }
+
+  render(pos, ctx) {
+    const size = 40*Constants.SCALE;
+    const fontSize = 12*Constants.SCALE;
+
+    if(this.dirty) {
+      var color = Util.lerpColor(DIRTYCOLOR, this.tree.color, this.getDirtyPercentage());
+    } else {
+      var color = this.tree.color;
     }
 
-    tick(dt) {
-        if(this.dirty) {
-            this.dirtyTicks -= dt;
-            if(this.dirtyTicks <= 0) {
-                this.dirty = false;
-            }
-        }
-    }
+    ctx.fillStyle = Util.colorToCSS(color);
+    ctx.fillRect(pos.x, pos.y, size, size);
 
-    getDirtyPercentage() {
-        return 1.0 - this.dirtyTicks / DIRTY_TIME;
-    }
+    //ctx.beginPath();
+    //ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
+    //ctx.stroke(); 
 
-    touch() {
-        Audio.beep(this.value);
-        this.dirty = true;
-        this.dirtyTicks = DIRTY_TIME;
-    }
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "#000";
+    ctx.fillText(this.value, pos.x + size/2, pos.y + size/2);
 
-    render(pos, ctx) {
-        const size = 40;
-        const fontSize = 12;
+    //const dist = 80;
 
-        if(this.dirty) {
-            var color = Util.lerpColor(DIRTYCOLOR, this.tree.color, this.getDirtyPercentage());
-        } else {
-            var color = this.tree.color;
-        }
+    // if(this.left) {
+    //     const leftPos = {
+    //         x: pos.x - dist,
+    //         y: pos.y + dist
+    //     };
 
-        ctx.fillStyle = Util.colorToCSS(color);
-        ctx.fillRect(pos.x, pos.y, size, size);
+    //     ctx.beginPath();
+    //     ctx.moveTo(pos.x+size/2, pos.y+size/2);
+    //     ctx.lineTo(leftPos.x+size/2, leftPos.y+size/2);
+    //     ctx.closePath();
 
-        //ctx.beginPath();
-        //ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
-        //ctx.stroke(); 
+    //     ctx.strokeStyle = Util.colorToCSS(this.tree.color);
+    //     ctx.stroke();
 
-        ctx.font = fontSize + "px Arial";
-        ctx.fillStyle = "#000";
-        ctx.fillText(this.value, pos.x + size/2, pos.y + size/2);
+    //     this.left.render(leftPos, ctx);
+    // }
 
-        const dist = 80;
-        if(this.left) {
-            const leftPos = {
-                x: pos.x - dist,
-                y: pos.y + dist
-            };
+    // if(this.right) {
+    //     const rightPos = {
+    //         x: pos.x + dist,
+    //         y: pos.y + dist
+    //     };
 
-            ctx.beginPath();
-            ctx.moveTo(pos.x+size/2, pos.y+size/2);
-            ctx.lineTo(leftPos.x+size/2, leftPos.y+size/2);
-            ctx.closePath();
+    //     ctx.beginPath();
+    //     ctx.moveTo(pos.x+size/2, pos.y+size/2);
+    //     ctx.lineTo(rightPos.x+size/2, rightPos.y+size/2);
+    //     ctx.closePath();
 
-            ctx.strokeStyle = Util.colorToCSS(this.tree.color);
-            ctx.stroke();
+    //     ctx.strokeStyle = Util.colorToCSS(this.tree.color);
+    //     ctx.stroke();
 
-            this.left.render(leftPos, ctx);
-        }
+    //     this.right.render(rightPos, ctx);
+    // }
 
-        if(this.right) {
-            const rightPos = {
-                x: pos.x + dist,
-                y: pos.y + dist
-            };
+    var n = this.children.length;
+    var dist = n*30*Constants.SCALE;
+    var x = -dist;
+    var xd = dist*2.0/n;
 
-            ctx.beginPath();
-            ctx.moveTo(pos.x+size/2, pos.y+size/2);
-            ctx.lineTo(rightPos.x+size/2, rightPos.y+size/2);
-            ctx.closePath();
+    this.children.forEach((child) => {
+      if(child === null || child === undefined) {
+        return;
+      }
+      const childPos = {
+        x: pos.x + x,
+        y: pos.y + 80
+      };
 
-            ctx.strokeStyle = Util.colorToCSS(this.tree.color);
-            ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pos.x+size/2, pos.y+size/2);
+      ctx.lineTo(childPos.x+size/2, childPos.y+size/2);
+      ctx.closePath();
 
-            this.right.render(rightPos, ctx);
-        }
-    }
+      ctx.strokeStyle = Util.colorToCSS(this.tree.color);
+      ctx.stroke();
+
+      child.render(childPos, ctx);
+
+      x += xd;
+    });
+  }
 }
 
 class Tree extends Struct {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.color = props.color || Util.randomColor();
-        this.refCounter = 0;
-        this.name = props.name || "Tree";
+    this.color = props.color || Util.randomColor();
+    this.refCounter = 0;
+    this.name = props.name || "Tree";
 
-        this.root = this.createNode({
-            value: 0,
-            left: this.createNode({
-                value: 1,
-                left: this.createNode({value: 3}),
-                right: this.createNode({value: 4})
-            }),
-            right: this.createNode({
-                value: 2,
-                right: this.createNode({value: 5})
-            })
-        });
+    // this.root = this.createNode({
+    //     value: 0,
+    //     left: this.createNode({
+    //         value: 1,
+    //         left: this.createNode({value: 3}),
+    //         right: this.createNode({value: 4})
+    //     }),
+    //     right: this.createNode({
+    //         value: 2,
+    //         right: this.createNode({value: 5})
+    //     })
+    // });
+    this.root = this.createNode({value: 0});
+    this.root.addChild(this.createNode({value: 1}));
+    this.root.addChild(this.createNode({value: 2}));
+    this.root.addChild(this.createNode({value: 3}));
+    this.root.addChild(this.createNode({value: 4}));
+    this.root.addChild(this.createNode({value: 5}));
+    this.root.addChild(this.createNode({value: 6}));
+    this.root.addChild(this.createNode({value: 7}));
+    this.root.addChild(this.createNode({value: 8}));
+  }
+
+  createNode(props) {
+    props.ref = this.name + "-" + this.refCounter++;
+    props.tree = this;
+
+    var node = new Node(props);
+    //node.touch();
+
+    return node;
+  }
+
+  getNodeByRef(ref) {
+    return this._getNodeByRef(ref, this.root);
+  }
+
+  //     _getNodeByRef(ref, node) {
+  //         if(node === null || node === undefined) {
+  //             return null;
+  //         }
+
+  //         if(node.ref == ref) {
+  //             return node;
+  //         }
+
+  //         var left = this._getNodeByRef(ref, node.left);
+  //         if(left) return left;
+
+  //         var right = this._getNodeByRef(ref, node.right);
+  //         if(right) return right;
+
+  //         return null;
+  //     }
+
+
+  _getNodeByRef(ref, node) {
+    if(node === null || node === undefined) {
+      return null;
     }
 
-    createNode(props) {
-        props.ref = this.name + "-" + this.refCounter++;
-        props.tree = this;
-
-        var node = new Node(props);
-        //node.touch();
-
-        return node;
+    if(node.ref == ref) {
+      return node;
     }
 
-    getNodeByRef(ref) {
-       return this._getNodeByRef(ref, this.root);
+    for(var i = 0; i < node.children.length; ++i) {
+      var c = node.children[i];
+      var n = this._getNodeByRef(ref, c);
+      if(n !== null) {
+        return n;
+      }
     }
 
-    _getNodeByRef(ref, node) {
-        if(node === null || node === undefined) {
-            return null;
-        }
+    return null;
+  }
 
-        if(node.ref == ref) {
-            return node;
-        }
+  getInfo() {
+    return this.name;
+  }
 
-        var left = this._getNodeByRef(ref, node.left);
-        if(left) return left;
+  tick(dt) {
+    this.tickNode(dt, this.root);
+  }
 
-        var right = this._getNodeByRef(ref, node.right);
-        if(right) return right;
-
-        return null;
+  tickNode(dt, node) {
+    if(node === null || node === undefined) {
+      return;
     }
 
-    getInfo() {
-        return this.name;
-    }
+    node.tick(dt);
 
-    tick(dt) {
-        this.tickNode(dt, this.root);
-    }
+    this.tickNode(dt, node.left);
+    this.tickNode(dt, node.right);
+  }
 
-    tickNode(dt, node) {
-        if(node === null || node === undefined) {
-            return;
-        }
+  render(pos, ctx) {
+    const offset = 200;
+    const fontSize = 13;
+    pos.x += offset;
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
 
-        node.tick(dt);
-
-        this.tickNode(dt, node.left);
-        this.tickNode(dt, node.right);
-    }
-
-    render(pos, ctx) {
-        const fontSize = 13;
-        ctx.font = fontSize + "px Arial";
-        ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
-
-        this.root.render(pos, ctx);
-    }
+    this.root.render(pos, ctx);
+  }
 }
 
 export default Tree;

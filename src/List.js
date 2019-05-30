@@ -1,6 +1,7 @@
 import Struct from './Struct.js'
 import Util from './Util.js'
 import Audio from './Audio';
+import Constants from './Constants';
 
 const DIRTY_TIME = 1.0;
 const SWAPPING_TIME = 0.1;
@@ -167,10 +168,10 @@ class List extends Struct {
   }
 
   render(pos, ctx) {
-    const boxSize = 40;
-    const boxDist = 45;
-    const boxMaxHeight = 100;
-    const fontSize = 12;
+    const boxSize = 40*Constants.SCALE;
+    const boxDist = 45*Constants.SCALE;
+    const boxMaxHeight = 100*Constants.SCALE;
+    const fontSize = 12*Constants.SCALE;
 
     ctx.fillStyle = Util.colorToCSS(this.color);
     ctx.font = fontSize + "px Arial";
