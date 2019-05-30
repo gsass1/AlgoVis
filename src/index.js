@@ -5,16 +5,9 @@ import Tree from './Tree.js'
 
 import './styles/main.scss'
 
-const INTERPRETER_SPEED = 10;
+const INTERPRETER_DELAY = 1;
 
-let list = new List({size: 5, color: { r: 255, g: 255, b: 255 }});
-list.shuffle();
-
-let tree = new Tree({name: "Tree"});
-
-list.swap(0, 4);
-list.add(100);
-list.add(100);
+const BG_COLOR = "#000000";
 
 let defaultCode = "var l = listCreate('l', 10);\n" +
 "\n" +
@@ -35,6 +28,8 @@ if(document.getElementById("codearea").value === "") {
 
 let algovis = new AlgoVis();
 
+/* CONTROL BUTTONS */
+
 document.getElementById("codeRun").onclick = e => {
   algovis.run();
 };
@@ -46,6 +41,8 @@ document.getElementById("codePause").onclick = e => {
 document.getElementById("codeStep").onclick = e => {
   algovis.step();
 };
+
+/* EXAMPLES */
 
 let examples = [
   {
@@ -127,17 +124,11 @@ function mainLoop() {
   let canvas = document.getElementById("canvas")
   let ctx = canvas.getContext("2d");
 
+  /* This is to keep the aspect ratio from fucking up */
   ctx.canvas.height = 3*ctx.canvas.width/4;
 
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  /*
-  list.tick(1.0/60.0);
-
-  list.render({x: 200, y: 150}, ctx);
-  tree.render({x: 200, y: 400}, ctx);
-  */
 
   algovis.tick(1.0/60.0);
   algovis.render(ctx);
@@ -153,7 +144,7 @@ function interpreterLoop() {
     algovis.step();
   }
 
-  setTimeout(interpreterLoop, INTERPRETER_SPEED);
+  setTimeout(interpreterLoop, INTERPRETER_DELAY);
 }
 
 interpreterLoop();

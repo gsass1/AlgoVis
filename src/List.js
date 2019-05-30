@@ -43,8 +43,13 @@ class ArrayData {
   }
 
   swapTo(i) {
-    this.touch();
+    if(this.swapping) {
+      throw new Error("already swapping");
+    }
+
     this.swapping = true;
+
+    this.touch();
     this.swappingTo = i;
     this.swappingTicks = SWAPPING_TIME;
   }
@@ -85,18 +90,7 @@ class List extends Struct {
       data.tick(dt);
 
       if(data.finishedSwap) {
-        data.finishedSwap = false;
-
-        /* Actually do the swap inside the internal array */
-        var tmp = this.array[i];
-        this.array[i] = this.array[data.swappingTo];
-        data.value = this.arrayData[data.swappingTo].value;
-        this.array[data.swappingTo] = tmp;
-        this.arrayData[data.swappingTo].value = tmp;
-
-        /* Stop the other ArrayData element reversing the swap */
-        this.arrayData[data.swappingTo].stopSwapping();
-        data.stopSwapping();
+        this.finishSwap(i);
       }
     }
   }
@@ -108,16 +102,55 @@ class List extends Struct {
   }
 
   get(i) {
+    if(this.arrayData[i].swapping) {
+      this.finishSwap(i);
+    }
+
     this.arrayData[i].touch();
     return this.array[i];
   }
 
   set(i, value) {
-    this.arrayData[i].touch();
     this.array[i] = value;
+    this.arrayData[i].value = value;
+
+    this.arrayData[i].touch();
+  }
+
+  finishSwap(i) {
+    var data = this.arrayData[i];
+    data.finishedSwap = false;
+
+    /* Actually do the swap inside the internal array */
+    var tmp = this.array[i];
+    this.array[i] = this.array[data.swappingTo];
+    data.value = this.arrayData[data.swappingTo].value;
+    this.array[data.swappingTo] = tmp;
+    this.arrayData[data.swappingTo].value = tmp;
+
+    /* Stop the other ArrayData element reversing the swap */
+    this.arrayData[data.swappingTo].finishedSwap = false;
+
+    this.arrayData[data.swappingTo].stopSwapping();
+    data.stopSwapping();
   }
 
   swap(a, b) {
+    a = a.data;
+    b = b.data;
+
+    if(a === b) {
+      return;
+    }
+
+    if(this.arrayData[a].swapping) {
+      this.finishSwap(a);
+    }
+
+    if(this.arrayData[b].swapping) {
+      this.finishSwap(b);
+    }
+
     this.arrayData[a].swapTo(b);
     this.arrayData[b].swapTo(a);
   }

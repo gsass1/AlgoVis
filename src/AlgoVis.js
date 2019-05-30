@@ -224,6 +224,7 @@ class AlgoVis {
                 var step = this.interpreter.step();
             } catch(e) {
                 alert(e);
+                console.log(e);
                 this.running = false;
             }
 
