@@ -21,7 +21,7 @@ export default {
   randomColor: () => {
     return {
       r: Math.floor(Math.random()*255),
-      g: Math.floor(Math.random()*255),
+      g: Math.floor(Math.random()*200),
       b: Math.floor(Math.random()*255),
     }
   }

@@ -1,6 +1,8 @@
 import Struct from './Struct.js'
 import Util from './Util.js'
 
+import Constants from './Constants';
+
 class Queue extends Struct {
   constructor(props) {
     super(props);
@@ -26,9 +28,9 @@ class Queue extends Struct {
   }
 
   render(pos, ctx) {
-    const height = 40;
-    const dist = 10;
-    const fontSize = 12;
+    const height = 40 * Constants.SCALE;
+    const dist = 10 * Constants.SCALE;
+    const fontSize = 12 * Constants.SCALE;
 
     ctx.font = fontSize + "px Arial";
     ctx.fillStyle = Util.colorToCSS(this.color);

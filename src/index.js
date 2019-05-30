@@ -7,7 +7,7 @@ import Constants from './Constants.js';
 
 import './styles/main.scss'
 
-const INTERPRETER_DELAY = 10;
+var INTERPRETER_DELAY = 5;
 
 const BG_COLOR = "#000000";
 
@@ -27,6 +27,17 @@ let defaultCode = "var l = listCreate('l', 10);\n" +
 if(document.getElementById("codearea").value === "") {
   document.getElementById("codearea").value = defaultCode;
 }
+
+const updateInterpreterDelay = () => {
+  INTERPRETER_DELAY = 10 - document.getElementById("speedSlider").value;
+}
+
+updateInterpreterDelay();
+
+document.getElementById("speedSlider").onchange = function(e) {
+  updateInterpreterDelay();
+};
+
 
 let algovis = new AlgoVis();
 
@@ -159,13 +170,14 @@ function mainLoop() {
   let canvas = document.getElementById("canvas")
   let ctx = canvas.getContext("2d");
 
-  ctx.canvas.width = window.innerWidth/2;
+  ctx.canvas.width = window.innerWidth*0.75;
 
   /* This is to keep the aspect ratio from fucking up */
   //ctx.canvas.height = 1.5 * ctx.canvas.width;
   ctx.canvas.height = 1 * ctx.canvas.width;
 
   Constants.SCALE = ctx.canvas.width/1280.0;
+  //Constants.SCALE = 2;
 
   ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);

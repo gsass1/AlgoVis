@@ -82,7 +82,7 @@ class Node {
 
     ctx.font = fontSize + "px Arial";
     ctx.fillStyle = "#000";
-    ctx.fillText(this.value, pos.x + size/2, pos.y + size/2);
+    ctx.fillText(this.ref.split("-")[1] + ":" + this.value, pos.x + size/4, pos.y + size/2);
 
     //const dist = 80;
 
@@ -131,7 +131,7 @@ class Node {
       }
       const childPos = {
         x: pos.x + x,
-        y: pos.y + 80
+        y: pos.y + 80*Constants.SCALE
       };
 
       ctx.beginPath();
@@ -139,7 +139,7 @@ class Node {
       ctx.lineTo(childPos.x+size/2, childPos.y+size/2);
       ctx.closePath();
 
-      ctx.strokeStyle = Util.colorToCSS(this.tree.color);
+      ctx.strokeStyle = Util.colorToCSS(color);
       ctx.stroke();
 
       child.render(childPos, ctx, depth + 1);
