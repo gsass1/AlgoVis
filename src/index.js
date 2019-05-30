@@ -8,6 +8,7 @@ import Constants from './Constants.js';
 import './styles/main.scss'
 
 var INTERPRETER_DELAY = 5;
+var ZOOM = 1;
 
 const BG_COLOR = "#000000";
 
@@ -54,6 +55,53 @@ document.getElementById("codePause").onclick = e => {
 document.getElementById("codeStep").onclick = e => {
   algovis.step();
 };
+
+var canvas = document.getElementById("canvas");
+
+var drag = false;
+var dragStart;
+var dragEnd;
+
+canvas.addEventListener('mousedown', function(event) {
+  dragStart = {
+    x: event.pageX - canvas.offsetLeft,
+    y: event.pageY - canvas.offsetTop
+  }
+
+  drag = true;
+});
+
+canvas.addEventListener('mouseup', function(event) {
+  drag = false;
+});
+
+canvas.addEventListener('mousemove', function(event) {
+  if (drag) {
+    dragEnd = {
+      x: event.pageX - canvas.offsetLeft,
+      y: event.pageY - canvas.offsetTop
+    }
+    algovis.offset.x += (dragEnd.x - dragStart.x);
+    algovis.offset.y += (dragEnd.y - dragStart.y);
+    dragStart = dragEnd;
+  }
+});
+
+canvas.addEventListener("wheel", function(event) {
+  const prevZoom = ZOOM;
+
+  if(event.deltaY > 0) {
+    ZOOM -= 0.1;
+    if(ZOOM < 0.1) {
+      ZOOM = 0.1;
+    }
+  } else {
+    ZOOM += 0.1;
+  }
+
+  algovis.offset.x += ZOOM
+  algovis.offset.y += ZOOM
+});
 
 /* EXAMPLES */
 
@@ -176,7 +224,7 @@ function mainLoop() {
   //ctx.canvas.height = 1.5 * ctx.canvas.width;
   ctx.canvas.height = 1 * ctx.canvas.width;
 
-  Constants.SCALE = ctx.canvas.width/1280.0;
+  Constants.SCALE = ctx.canvas.width/1280.0 * ZOOM;
   //Constants.SCALE = 2;
 
   ctx.fillStyle = BG_COLOR;

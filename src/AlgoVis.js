@@ -252,6 +252,10 @@ const createSelection = (start, end) => {
 class AlgoVis {
   constructor(props) {
     this.reset();
+    this.offset = {
+      x: 0,
+      y: 0
+    };
   }
 
   createInterpreter() {
@@ -350,8 +354,8 @@ class AlgoVis {
 
   render(ctx) {
     let pos = {
-      x: 200*Constants.SCALE,
-      y: 200*Constants.SCALE
+      x: this.offset.x + 200*Constants.SCALE,
+      y: this.offset.y + 200*Constants.SCALE
     }
 
     this.objects.forEach((object) => {
