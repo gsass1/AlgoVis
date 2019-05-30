@@ -28,6 +28,8 @@ class Queue extends Struct {
   }
 
   render(pos, ctx) {
+    ctx.textAlign = "left";
+
     const height = 40 * Constants.SCALE;
     const dist = 10 * Constants.SCALE;
     const fontSize = 12 * Constants.SCALE;

@@ -91,7 +91,7 @@ canvas.addEventListener('mousemove', function(event) {
 canvas.addEventListener("wheel", function(e) {
   const {x, y, deltaY} = e;
   const direction = deltaY > 0 ? -1 : 1;
-  const factor = 0.01;
+  const factor = 0.1;
   const zoom = 1 * direction * factor;
 
   const pos = {
@@ -206,6 +206,53 @@ let examples = [
     "}\n" +
     "\n" +
     "depthSearch(root);\n"
+  },
+  {
+    name: "bstinsertsearch",
+    code: "var tree = treeCreate('tree');\n" +
+    "var root = treeRoot(tree);\n" +
+    "\n" +
+    "nodeSet(root, 50);\n" +
+    "\n" +
+    "function BST_Insert(node, value) {\n" +
+    "  var nvalue = nodeValue(node);\n" +
+    "  if(value < nvalue) {\n" +
+    "    if(nodeLeft(node) != -1) {\n" +
+    "      BST_Insert(nodeLeft(node), value);\n" +
+    "    } else {\n" +
+    "      nodeSetLeft(node, value);\n" +
+    "    }\n" +
+    "  } else if(value > nvalue) {\n" +
+    "    if(nodeRight(node) != -1) {\n" +
+    "      BST_Insert(nodeRight(node), value);\n" +
+    "    } else {\n" +
+    "      nodeSetRight(node, value);\n" +
+    "    }\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "for(var i = 0; i < 10; ++i) {\n" +
+    "    BST_Insert(root, Math.floor(Math.random() * 100)); \n" +
+    "}\n" +
+    "\n" +
+    "BST_Insert(root, 40); \n" +
+    "\n" +
+    "function BST_Search(node, value) {\n" +
+    "  if(node == -1) return -1;\n" +
+    "   \n" +
+    "  var nvalue = nodeValue(node);\n" +
+    "  if(nvalue == value) return node;\n" +
+    "\n" +
+    "  if(nvalue < value) {\n" +
+    "    return BST_Search(nodeLeft(node), value);\n" +
+    "  } else {\n" +
+    "    return BST_Search(nodeRight(node), value);\n" +
+    "  }\n" +
+    "\n" +
+    "return -1;\n" +
+    "}\n" +
+    "\n" +
+    "BST_Search(root, 40);\n"
   }
 ];
 
@@ -235,7 +282,9 @@ function mainLoop() {
   //ctx.canvas.height = 1.5 * ctx.canvas.width;
   ctx.canvas.height = 1 * ctx.canvas.width;
 
-  ASPECT_RATIO = ctx.canvas.width/1280.0;
+  //ASPECT_RATIO = ctx.canvas.width/1280.0;
+  ASPECT_RATIO = 1;
+
   Constants.SCALE = ASPECT_RATIO * ZOOM;
 
   ctx.fillStyle = BG_COLOR;

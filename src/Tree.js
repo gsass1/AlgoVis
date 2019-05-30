@@ -69,7 +69,7 @@ class Node {
   }
 
   render(pos, ctx, depth) {
-    const size = 40*Constants.SCALE;
+    const size = 20*Constants.SCALE;
     const fontSize = 12*Constants.SCALE;
 
     if(this.dirty) {
@@ -77,53 +77,6 @@ class Node {
     } else {
       var color = this.tree.color;
     }
-
-    ctx.fillStyle = Util.colorToCSS(color);
-    ctx.fillRect(pos.x, pos.y, size, size);
-
-    //ctx.beginPath();
-    //ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
-    //ctx.stroke(); 
-
-    ctx.font = fontSize + "px Arial";
-    ctx.fillStyle = "#000";
-    ctx.fillText(this.ref.split("-")[1] + ":" + this.value, pos.x + size/4, pos.y + size/2);
-
-    //const dist = 80;
-
-    // if(this.left) {
-    //     const leftPos = {
-    //         x: pos.x - dist,
-    //         y: pos.y + dist
-    //     };
-
-    //     ctx.beginPath();
-    //     ctx.moveTo(pos.x+size/2, pos.y+size/2);
-    //     ctx.lineTo(leftPos.x+size/2, leftPos.y+size/2);
-    //     ctx.closePath();
-
-    //     ctx.strokeStyle = Util.colorToCSS(this.tree.color);
-    //     ctx.stroke();
-
-    //     this.left.render(leftPos, ctx);
-    // }
-
-    // if(this.right) {
-    //     const rightPos = {
-    //         x: pos.x + dist,
-    //         y: pos.y + dist
-    //     };
-
-    //     ctx.beginPath();
-    //     ctx.moveTo(pos.x+size/2, pos.y+size/2);
-    //     ctx.lineTo(rightPos.x+size/2, rightPos.y+size/2);
-    //     ctx.closePath();
-
-    //     ctx.strokeStyle = Util.colorToCSS(this.tree.color);
-    //     ctx.stroke();
-
-    //     this.right.render(rightPos, ctx);
-    // }
 
     var n = this.children.length;
     var dist = n*25*Constants.SCALE*depth;
@@ -134,6 +87,7 @@ class Node {
       var child = this.children[i];
 
       if(child === null || child === undefined) {
+        x += xd;
         continue;
       }
 
@@ -148,12 +102,29 @@ class Node {
       ctx.closePath();
 
       ctx.strokeStyle = Util.colorToCSS(color);
+      ctx.lineWidth = 3;
       ctx.stroke();
 
       child.render(childPos, ctx, depth + 1);
 
       x += xd;
     }
+
+
+    ctx.beginPath();
+    ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
+    ctx.fillStyle = Util.colorToCSS(color);
+    ctx.fill();
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.fillText(this.value, pos.x + size/2, pos.y + size/1.5);
+
   }
 }
 
