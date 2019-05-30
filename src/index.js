@@ -7,7 +7,7 @@ import Constants from './Constants.js';
 
 import './styles/main.scss'
 
-const INTERPRETER_DELAY = 1;
+const INTERPRETER_DELAY = 10;
 
 const BG_COLOR = "#000000";
 
@@ -106,20 +106,19 @@ let examples = [
   },
   {
     name: "breadthfirstsearch",
-    code: "var tree = treeCreate('tree');\n"+
+    code: "var tree = treeCreate('tree');\n" +
     "var root = treeRoot(tree);\n" +
     "\n" +
-    "var queue = [];\n" +
+    "var q = queueCreate('queue');\n" +
     "\n" +
-    "queue.push(root);\n" +
+    "enqueue(q, root);\n" +
     "\n" +
-    "while(queue.length != 0) {\n" +
-    " var tempNode = queue.shift();   \n" +
-    "\n" +
+    "while(queueSize(q) != 0) {\n" +
+    " var tempNode = dequeue(q); \n" +
     "  for(var i = 0; i < nodeChildCount(tempNode); ++i) {\n" +
     "    var c = nodeGetChild(tempNode, i);\n" +
     "    nodeValue(c); // mark as visited\n" +
-    "    queue.push(c); \n" +
+    "    enqueue(q, c); \n" +
     "  } \n" +
     "}\n"
   },

@@ -2,6 +2,7 @@ import Interpreter from 'js-interpreter'
 import List from './List';
 import Util from './Util';
 import Tree from './Tree';
+import Queue from './Queue';
 import Constants from './Constants';
 
 let testCode = document.getElementById("codearea").value;
@@ -12,7 +13,7 @@ const deepCopy = obj => {
 };
 
 const getTreeFromNodeRef = ref => {
-  return ref.split("-")[0];
+  return String(ref).split("-")[0];
 }
 
 const createInterpreter = (algovis, code) => {
@@ -155,6 +156,30 @@ const createInterpreter = (algovis, code) => {
       node.addChild(child)
 
       return interp.createPrimitive(child.ref);
+    }));
+
+    /* Queue */
+    interp.setProperty(scope, 'queueCreate', interp.createNativeFunction((name) => {
+      const queue = new Queue({ name: name.data });
+      algovis.addObject(queue);
+      return name;
+    }));
+
+    interp.setProperty(scope, 'enqueue', interp.createNativeFunction((name, obj) => {
+      const queue = algovis.getObject(name.data);
+      queue.enqueue(obj);
+    }));
+
+    interp.setProperty(scope, 'dequeue', interp.createNativeFunction((name) => {
+      const queue = algovis.getObject(name.data);
+      var obj = queue.dequeue();
+
+      return interp.createPrimitive(obj);
+    }));
+
+    interp.setProperty(scope, 'queueSize', interp.createNativeFunction((name) => {
+      const queue = algovis.getObject(name.data);
+      return interp.createPrimitive(queue.q.length);
     }));
 
   })
