@@ -10,7 +10,8 @@ const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 class Node {
   constructor(props) {
     this.ref = props.ref;
-    this.value = Math.ceil(Math.random()*100);
+    //this.value = Math.ceil(Math.random()*100);
+    this.value = props.value;
     this.children = new Array(0);
     this.left = props.left || null;
     this.right = props.right || null;
@@ -44,7 +45,7 @@ class Node {
     this.dirtyTicks = DIRTY_TIME;
   }
 
-  render(pos, ctx) {
+  render(pos, ctx, depth) {
     const size = 40*Constants.SCALE;
     const fontSize = 12*Constants.SCALE;
 
@@ -102,9 +103,9 @@ class Node {
     // }
 
     var n = this.children.length;
-    var dist = n*30*Constants.SCALE;
+    var dist = n*25*Constants.SCALE*depth;
     var x = -dist;
-    var xd = dist*2.0/n;
+    var xd = dist*4.0/n;
 
     this.children.forEach((child) => {
       if(child === null || child === undefined) {
@@ -123,7 +124,7 @@ class Node {
       ctx.strokeStyle = Util.colorToCSS(this.tree.color);
       ctx.stroke();
 
-      child.render(childPos, ctx);
+      child.render(childPos, ctx, depth + 1);
 
       x += xd;
     });
@@ -151,14 +152,23 @@ class Tree extends Struct {
     //     })
     // });
     this.root = this.createNode({value: 0});
-    this.root.addChild(this.createNode({value: 1}));
-    this.root.addChild(this.createNode({value: 2}));
-    this.root.addChild(this.createNode({value: 3}));
-    this.root.addChild(this.createNode({value: 4}));
-    this.root.addChild(this.createNode({value: 5}));
-    this.root.addChild(this.createNode({value: 6}));
-    this.root.addChild(this.createNode({value: 7}));
-    this.root.addChild(this.createNode({value: 8}));
+
+    this.makeRandomBranch(this.root, 3);
+  }
+
+  makeRandomBranch(node, depth) {
+    if(depth == 0) {
+      return;
+    }
+
+    const maxCount = 2;
+
+    var count = Math.ceil(Math.random() * maxCount);
+
+    while(count--) {
+      node.addChild(this.createNode({ value: Math.floor(Math.random()*100) }));
+      this.makeRandomBranch(node.children[node.children.length - 1], depth - 1);
+    }
   }
 
   createNode(props) {
@@ -229,8 +239,9 @@ class Tree extends Struct {
 
     node.tick(dt);
 
-    this.tickNode(dt, node.left);
-    this.tickNode(dt, node.right);
+    node.children.forEach((c) => {
+      this.tickNode(dt, c);
+    });
   }
 
   render(pos, ctx) {
@@ -240,7 +251,7 @@ class Tree extends Struct {
     ctx.font = fontSize + "px Arial";
     ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
 
-    this.root.render(pos, ctx);
+    this.root.render(pos, ctx, 1);
   }
 }
 

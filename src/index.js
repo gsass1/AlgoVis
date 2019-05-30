@@ -103,6 +103,40 @@ let examples = [
     "}\n" +
     "\n" +
     "quicksort(0, listLength(list));\n"
+  },
+  {
+    name: "breadthfirstsearch",
+    code: "var tree = treeCreate('tree');\n"+
+    "var root = treeRoot(tree);\n" +
+    "\n" +
+    "var queue = [];\n" +
+    "\n" +
+    "queue.push(root);\n" +
+    "\n" +
+    "while(queue.length != 0) {\n" +
+    " var tempNode = queue.shift();   \n" +
+    "\n" +
+    "  for(var i = 0; i < nodeChildCount(tempNode); ++i) {\n" +
+    "    var c = nodeGetChild(tempNode, i);\n" +
+    "    nodeValue(c); // mark as visited\n" +
+    "    queue.push(c); \n" +
+    "  } \n" +
+    "}\n"
+  },
+  {
+    name: "depthfirstsearch",
+    code: "var tree = treeCreate('tree');\n" +
+    "var root = treeRoot(tree);\n" +
+    "\n" +
+    "function depthSearch(node) {\n" +
+    "  nodeValue(node);\n" +
+    "\n" +
+    "  for(var i = 0; i < nodeChildCount(node); ++i) {\n" +
+    "    depthSearch(nodeGetChild(node, i));\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "depthSearch(root);\n"
   }
 ];
 

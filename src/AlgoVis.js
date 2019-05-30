@@ -145,6 +145,18 @@ const createInterpreter = (algovis, code) => {
       return interp.createPrimitive(JSON.stringify(node.children.map((x) => {return (x.ref); })));
     }));
 
+    interp.setProperty(scope, 'nodeAddChild', interp.createNativeFunction((nodeRef, value) => {
+      const objName = getTreeFromNodeRef(nodeRef.data);
+      const tree = algovis.getObject(objName);
+      const node = tree.getNodeByRef(nodeRef.data);
+
+      const child = tree.createNode({ value: value.data });
+
+      node.addChild(child)
+
+      return interp.createPrimitive(child.ref);
+    }));
+
   })
 }
 
