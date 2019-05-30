@@ -15,8 +15,10 @@ class Node {
     this.children = new Array(0);
     this.left = props.left || null;
     this.right = props.right || null;
-    //this.children.push(this.left);
-    //this.children.push(this.right);
+
+    if(this.left) this.children.push(this.left);
+    if(this.right) this.children.push(this.right);
+
     this.tree = props.tree;
     this.dirty = false;
     this.dirtyTicks = 0;
@@ -43,6 +45,22 @@ class Node {
     Audio.beep(this.value);
     this.dirty = true;
     this.dirtyTicks = DIRTY_TIME;
+  }
+
+  getLeft() {
+    return this.children[0];
+  }
+
+  getRight() {
+    return this.children[1];
+  }
+
+  setLeft(node) {
+    this.children[0] = node;
+  }
+
+  setRight(node) {
+    this.children[1] = node;
   }
 
   render(pos, ctx, depth) {
@@ -152,22 +170,26 @@ class Tree extends Struct {
     //     })
     // });
     this.root = this.createNode({value: 0});
-
-    this.makeRandomBranch(this.root, 3);
   }
 
-  makeRandomBranch(node, depth) {
+  static createRandomTree(props) {
+    const tree = new Tree(props);
+    tree.makeRandomBranch(tree.root, props.depth || 2, props.maxChildCount || 3);
+    return tree;
+  }
+
+  makeRandomBranch(node, depth, maxChildCount) {
     if(depth == 0) {
       return;
     }
 
-    const maxCount = 2;
+    var count = Math.ceil(Math.random() * maxChildCount);
 
-    var count = Math.ceil(Math.random() * maxCount);
+    console.log(count);
 
     while(count--) {
       node.addChild(this.createNode({ value: Math.floor(Math.random()*100) }));
-      this.makeRandomBranch(node.children[node.children.length - 1], depth - 1);
+      this.makeRandomBranch(node.children[node.children.length - 1], depth - 1, maxChildCount);
     }
   }
 

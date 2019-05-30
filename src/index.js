@@ -106,7 +106,7 @@ let examples = [
   },
   {
     name: "breadthfirstsearch",
-    code: "var tree = treeCreate('tree');\n" +
+    code: "var tree = randomTree('tree');\n" +
     "var root = treeRoot(tree);\n" +
     "\n" +
     "var q = queueCreate('queue');\n" +
@@ -114,7 +114,7 @@ let examples = [
     "enqueue(q, root);\n" +
     "\n" +
     "while(queueSize(q) != 0) {\n" +
-    " var tempNode = dequeue(q); \n" +
+    "  var tempNode = dequeue(q); \n" +
     "  for(var i = 0; i < nodeChildCount(tempNode); ++i) {\n" +
     "    var c = nodeGetChild(tempNode, i);\n" +
     "    nodeValue(c); // mark as visited\n" +
@@ -124,7 +124,7 @@ let examples = [
   },
   {
     name: "depthfirstsearch",
-    code: "var tree = treeCreate('tree');\n" +
+    code: "var tree = randomTree('tree');\n" +
     "var root = treeRoot(tree);\n" +
     "\n" +
     "function depthSearch(node) {\n" +
