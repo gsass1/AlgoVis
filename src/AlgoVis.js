@@ -275,8 +275,8 @@ class AlgoVis {
     this.running = true;
   }
 
-  pause() {
-    this.running = false;
+  togglePause() {
+    this.running = !this.running;
   }
 
   step() {

@@ -37,7 +37,7 @@ document.getElementById("codeRun").onclick = e => {
 };
 
 document.getElementById("codePause").onclick = e => {
-  algovis.pause();
+  algovis.togglePause();
 };
 
 document.getElementById("codeStep").onclick = e => {
