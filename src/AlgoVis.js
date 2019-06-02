@@ -52,7 +52,7 @@ const createInterpreter = (algovis, code) => {
       return interp.createPrimitive(algovis.getObject(name.data).size);
     }));
 
-    interp.setProperty(scope, 'listLength', interp.createNativeFunction((name, value) => {
+    interp.setProperty(scope, 'listLength', interp.createNativeFunction((name) => {
       return interp.createPrimitive(algovis.getObject(name.data).size);
     }));
 

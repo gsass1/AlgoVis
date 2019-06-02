@@ -103,8 +103,6 @@ canvas.addEventListener("wheel", function(e) {
   algovis.offset.x -= (pos.x-algovis.offset.x)/(ZOOM)*zoom;
   algovis.offset.y -= (pos.y-algovis.offset.y)/(ZOOM)*zoom;
 
-  console.log(ZOOM);
-
   ZOOM += zoom;
 
   if(ZOOM < 0.1) {

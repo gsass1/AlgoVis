@@ -14,7 +14,6 @@ export default {
       b: lerpf(a.b, b.b, t),
     }
   },
-
   colorToCSS: (color) => {
     return `rgb(${Math.floor(color.r)}, ${Math.floor(color.g)}, ${Math.floor(color.b)})`
   },
@@ -24,5 +23,8 @@ export default {
       g: Math.floor(Math.random()*200),
       b: Math.floor(Math.random()*255),
     }
+  },
+  cssFont: (size, font) => {
+    return size + "px " + font;
   }
 };

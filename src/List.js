@@ -174,7 +174,7 @@ class List extends Struct {
     const fontSize = 12*Constants.SCALE;
 
     ctx.fillStyle = Util.colorToCSS(this.color);
-    ctx.font = fontSize + "px Arial";
+    ctx.font = Util.cssFont(fontSize, "Arial");
     ctx.fillText(this.getInfo(), pos.x, pos.y - boxMaxHeight);
 
     ctx.rect(pos.x, pos.y, 100, 100);

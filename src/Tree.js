@@ -62,10 +62,11 @@ class Node {
   }
 
   setRight(node) {
-    console.log("setRight");
-    console.log(this.children);
     this.children[1] = node;
-    console.log(this.children);
+  }
+
+  getXPos(offset) {
+    return offset + this.x * size;
   }
 
   render(pos, ctx, depth) {
@@ -79,26 +80,34 @@ class Node {
     }
 
     var n = this.children.length;
-    var dist = n*25*Constants.SCALE*depth;
-    var x = -dist;
-    var xd = dist*4.0/n;
+
+    var targetPos = {
+      x: pos.x + (this.x?this.x:0) * 80.0 * Constants.SCALE,
+      y: pos.y
+    };
 
     for(var i = 0; i < this.children.length; ++i) {
       var child = this.children[i];
 
       if(child === null || child === undefined) {
-        x += xd;
         continue;
       }
 
-      const childPos = {
+      var x = child.x * 80.0 * Constants.SCALE;
+
+      const lineTo = {
         x: pos.x + x,
         y: pos.y + 80*Constants.SCALE
       };
 
+      const childPos = {
+        x: pos.x,
+        y: pos.y + 80*Constants.SCALE
+      };
+
       ctx.beginPath();
-      ctx.moveTo(pos.x+size/2, pos.y+size/2);
-      ctx.lineTo(childPos.x+size/2, childPos.y+size/2);
+      ctx.moveTo(targetPos.x+size/2, targetPos.y+size/2);
+      ctx.lineTo(lineTo.x+size/2, lineTo.y+size/2);
       ctx.closePath();
 
       ctx.strokeStyle = Util.colorToCSS(color);
@@ -106,24 +115,22 @@ class Node {
       ctx.stroke();
 
       child.render(childPos, ctx, depth + 1);
-
-      x += xd;
     }
 
-
     ctx.beginPath();
-    ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
+    ctx.arc(targetPos.x+size/2, targetPos.y+size/2, size, 0, 2 * Math.PI);
     ctx.fillStyle = Util.colorToCSS(color);
     ctx.fill();
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = "#fff";
     ctx.stroke();
+    ctx.closePath();
 
     ctx.font = fontSize + "px Arial";
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    ctx.fillText(this.value, pos.x + size/2, pos.y + size/1.5);
+    ctx.fillText(this.value, targetPos.x + size/2, targetPos.y + size/1.5);
 
   }
 }
@@ -135,6 +142,7 @@ class Tree extends Struct {
     this.color = props.color || Util.randomColor();
     this.refCounter = 0;
     this.name = props.name || "Tree";
+    this.children = [];
 
     // this.root = this.createNode({
     //     value: 0,
@@ -175,6 +183,7 @@ class Tree extends Struct {
     props.tree = this;
 
     var node = new Node(props);
+    this.children.push(node);
     //node.touch();
 
     return node;
@@ -223,6 +232,22 @@ class Tree extends Struct {
     return null;
   }
 
+//   forEachPreOrder(cb) {
+//     _forEachPreOrder(this.root, cb):
+//   }
+
+//   _forEachPreOrder(node, cb) {
+//     cb(node);
+
+//     for(var i = 0; i < node.children.length; ++i) {
+//       var c = node.children[i];
+
+//       if(c) {
+//         this._forEachPreOrder(c, cb);
+//       }
+//     }
+//   }
+
   getInfo() {
     return this.name;
   }
@@ -243,12 +268,97 @@ class Tree extends Struct {
     });
   }
 
+  findParentOf(node, root) {
+    for(var i = 0; i < root.children.length; ++i) {
+      if(node == root.children[i]) {
+        return root;
+      }
+    }
+
+    for(var i = 0; i < root.children.length; ++i) {
+      if(root.children[i]) {
+        var p = this.findParentOf(node, root.children[i]);
+        if(p) {
+          return p;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  calcInitialX(node) {
+    for(var i = 0; i < node.children.length; ++i) {
+      var c = node.children[i];
+
+      if(c) {
+        this.calcInitialX(c);
+      }
+    }
+
+    if(node === this.root) {
+      return;
+    }
+
+    var p = this.findParentOf(node, this.root);
+
+    if(!p && node != this.root) {
+      alert("oops");
+    }
+
+    var pi = -1;
+    for(var i = 0; i < p.children.length; ++i) {
+      if(p.children[i] === node) {
+        pi = i;
+        break;
+      }
+    }
+
+    if(pi < 0) {
+      return;
+    }
+
+    /* left-most */
+    if(pi == 0) {
+      node.x = 0;
+    } else {
+      if(p.children[i - 1]) {
+        node.x = p.children[i - 1].x + 1;
+      } else {
+        node.x = 0;
+      }
+    }
+  }
+
+  centerParents(node) {
+    if(node.children.length > 1 && node.children[0]) {
+      var minX = node.children[0].x;
+      var maxX = node.children[node.children.length - 1].x;
+
+      node.x = (maxX - minX) / 2.0;
+    }
+
+    for(var i = 0; i < node.children.length; ++i) {
+      var child = node.children[i];
+      if(child) {
+        this.centerParents(child);
+      }
+    }
+  }
+
+  prepareTreeRender() {
+    this.calcInitialX(this.root);
+    this.centerParents(this.root);
+  }
+
   render(pos, ctx) {
     const offset = 200;
     const fontSize = 13;
     pos.x += offset;
     ctx.font = fontSize + "px Arial";
     ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
+
+    this.prepareTreeRender();
 
     this.root.render(pos, ctx, 1);
   }
