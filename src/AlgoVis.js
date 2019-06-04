@@ -1,4 +1,5 @@
 import Interpreter from 'js-interpreter'
+import Graph from './Graph';
 import List from './List';
 import Util from './Util';
 import Tree from './Tree';
@@ -263,6 +264,39 @@ const createInterpreter = (algovis, code) => {
       return interp.createPrimitive(queue.q.length);
     }));
 
+    /* Graph */
+    interp.setProperty(scope, 'graphCreate', interp.createNativeFunction((name) => {
+      const graph = new Graph({ name: name.data });
+      algovis.addObject(graph);
+
+      return name;
+    }));
+
+    interp.setProperty(scope, 'addVertex', interp.createNativeFunction((graphName, name) => {
+      const graph = algovis.getObject(graphName.data);
+      const vertex = graph.createVertex({ name: name.data });
+
+      return interp.createPrimitive(vertex.getRef());
+    }));
+
+    interp.setProperty(scope, 'addEdge', interp.createNativeFunction((graphName, v0Ref, v1Ref, name) => {
+      const graph = algovis.getObject(graphName.data);
+
+      const v0 = graph.getVertexByRef(v0Ref.data);
+      const v1 = graph.getVertexByRef(v1Ref.data);
+
+      if(name === undefined) {
+        name = {
+          data: ""
+        };
+      }
+
+      const edge = graph.createEdge({ v0, v1, name: name.data });
+
+      console.log(edge);
+
+      return interp.createPrimitive(edge.getRef());
+    }));
   })
 }
 
