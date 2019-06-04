@@ -64,8 +64,10 @@ html, body {
 #codearea {
   width: 100%;
   border: none;
-  background-color: #000;
+  background-color: #161616;
   color: #fff;
+
+  padding-left: 2em;
   font-size: 20px;
 
   font-family: "Liberation Mono", "Inconsolata";
@@ -75,6 +77,8 @@ html, body {
   height: 150px;
   background: #ccc;
   overflow: scroll;  
+
+  padding: 0 20px 0 20px;
 }
 
 
@@ -127,4 +131,12 @@ a.dropdown-category {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
   background-color: rgba(1, 1, 1, 0.5);
+}
+
+#varTable {
+  font-family: "Liberation Mono", "Inconsolata";
+
+  th, td {
+    padding-right: 2em;
+  }
 }

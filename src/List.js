@@ -177,9 +177,6 @@ class List extends Struct {
     ctx.font = Util.defaultFont(fontSize);
     ctx.fillText(this.getInfo(), pos.x, pos.y - boxMaxHeight);
 
-    ctx.rect(pos.x, pos.y, 100, 100);
-    ctx.stroke();
-
     for(var i = 0; i < this.size; ++i) {
       var x = pos.x + boxDist * i;
       var y = pos.y;

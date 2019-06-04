@@ -11,7 +11,7 @@ var INTERPRETER_DELAY = 5;
 var ZOOM = 1;
 var ASPECT_RATIO = 1;
 
-const BG_COLOR = "#000000";
+const BG_COLOR = "#00000";
 
 let defaultCode = "var l = listCreate('l', 10);\n" +
 "\n" +
