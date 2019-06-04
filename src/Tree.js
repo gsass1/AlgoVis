@@ -16,6 +16,9 @@ class Node {
     this.left = props.left || null;
     this.right = props.right || null;
 
+    this.x = 0;
+    this.mod = 0;
+
     if(this.left) this.children.push(this.left);
     if(this.right) this.children.push(this.right);
 
@@ -35,6 +38,10 @@ class Node {
         this.dirty = false;
       }
     }
+  }
+
+  isLeaf() {
+    return this.children.length == 0;
   }
 
   getDirtyPercentage() {
@@ -67,53 +74,6 @@ class Node {
 
   getXPos(offset) {
     return offset + this.x * size;
-  }
-
-  calculateLeftContour() {
-    var arr = [];
-
-    return this._calculateLeftContour(this, arr);
-  }
-
-  _calculateLeftContour(node, arr) {
-    for(var i = 0; i < node.children.length; ++i) {
-      if(node.children[i]) {
-        arr.push(node.children[i].x);
-        this._calculateLeftContour(node.children[i], arr);
-        break;
-      }
-    }
-
-    return arr;
-  }
-
-  calculateRightContour() {
-    var arr = [];
-
-    return this._calculateRightContour(this, arr);
-  }
-
-  _calculateRightContour(node, arr) {
-    for(var i = node.children.length - 1; i >= 0; --i) {
-      if(node.children[i]) {
-        arr.push(node.children[i].x);
-        this._calculateRightContour(node.children[i], arr);
-        break;
-      }
-    }
-
-    return arr;
-  }
-
-  adjustX(offset) {
-    this.x += offset;
-
-    for(var i = 0; i < this.children.length; ++i) {
-      var child = this.children[i];
-      if(child) {
-        child.adjustX(offset);
-      }
-    }
   }
 
   render(pos, ctx, depth) {
@@ -334,6 +294,61 @@ class Tree extends Struct {
     return null;
   }
 
+  checkForConflicts(node) {
+    var minDistance = 5;
+    var shiftValue = 0;
+
+    var nodeContour = [];
+    this.getLeftContour(node, 0, nodeContour);
+
+    var p = this.findParentOf(node, this.root);
+
+    var pi = -1;
+
+    for(var i = 0; i < p.children.length; ++i) {
+      if(p.children[i] === node) {
+        pi = i;
+        break;
+      }
+    }
+
+    if(pi == -1)  {
+      throw new Exception("oopsie");
+    }
+
+    var siblingIndex = pi - 1;
+    var sibling = p.children[siblingIndex];
+
+    while (sibling !== null && sibling !== undefined && sibling != node)
+    {
+      var siblingContour = [];
+      this.getRightContour(sibling, 0, siblingContour);
+
+      //for (var level = this.getNodeY(node.Y) + 1; level <= Math.Min(siblingContour.Keys.Max(), nodeContour.Keys.Max()); ++level)
+      for (var level = this.getNodeY(node.Y) + 1; level <= Math.min(siblingContour.length, nodeContour.length); ++level)
+      {
+        var nodeLevel = nodeContour[level] ? nodeContour[level] : 0;
+        var siblingLevel = siblingContour[level] ? siblingContour[level] : 0;
+
+        var distance = nodeLevel - siblingLevel;
+        if (distance + shiftValue < minDistance)
+        {
+          shiftValue = minDistance - distance;
+        }
+      }
+
+      if (shiftValue > 0)
+      {
+        node.x += shiftValue;
+        node.mod += shiftValue;
+
+        shiftValue = 0;
+      }
+
+      sibling = p.children[++siblingIndex];
+    }
+  }
+
   calcInitialX(node) {
     for(var i = 0; i < node.children.length; ++i) {
       var c = node.children[i];
@@ -343,38 +358,96 @@ class Tree extends Struct {
       }
     }
 
-    if(node === this.root) {
-      return;
-    }
+    if(node !== this.root) {
+      var p = this.findParentOf(node, this.root);
 
-    var p = this.findParentOf(node, this.root);
+      var pi = -1;
 
-    if(!p && node != this.root) {
-      alert("oops");
-    }
-
-    var pi = -1;
-    for(var i = 0; i < p.children.length; ++i) {
-      if(p.children[i] === node) {
-        pi = i;
-        break;
+      for(var i = 0; i < p.children.length; ++i) {
+        if(p.children[i] === node) {
+          pi = i;
+          break;
+        }
       }
-    }
 
-    if(pi < 0) {
-      return;
-    }
-
-    /* left-most */
-    if(pi == 0) {
-      node.x = 0;
+      if(pi == -1)  {
+        throw new Exception("oopsie");
+      }
     } else {
-      if(p.children[i - 1]) {
-        node.x = p.children[i - 1].x + 1;
+      var pi = 0;
+      var p = null;
+    }
+
+    if(node.isLeaf())  {
+      /* left-most */
+      if(pi == 0) {
+        node.X = 0;
       } else {
-        node.x = 0;
+        node.x = p.children[pi - 1].x + 1 + 1;
+      }
+    } else if(node.children.length == 1) {
+      if (pi == 0)
+      {
+        node.x = node.children[0].x;
+      }
+      else
+      {
+        node.x = p.children[pi - 1].x + 1 + 1;
+        node.mod = node.x - node.children[0].x;
+      } 
+    } else {
+      var leftChild = node.children[0];
+      var rightChild = node.children[node.children.length - 1];
+
+      var mid = (leftChild.x + rightChild.x) / 2.0;
+
+      if(pi == 0)
+      {
+        node.x = mid;
+      }
+      else
+      {
+        node.x = p.children[pi - 1].x + 1 + 1;
+        node.mod = node.x - mid;
       }
     }
+
+    if(node.children.length > 0 && pi != 0) {
+      this.checkForConflicts(node);
+    }
+
+    // if(node === this.root) {
+    //   return;
+    // }
+
+    // var p = this.findParentOf(node, this.root);
+
+    // if(!p && node != this.root) {
+    //   alert("oops");
+    // }
+
+    // var pi = -1;
+    // for(var i = 0; i < p.children.length; ++i) {
+    //   if(p.children[i] === node) {
+    //     pi = i;
+    //     break;
+    //   }
+    // }
+
+    // if(pi < 0) {
+    //   return;
+    // }
+
+    // /* left-most */
+    // if(pi == 0) {
+    //   node.x = 0;
+    // } else {
+    //   if(p.children[i - 1]) {
+    //     node.x = p.children[i - 1].x + 1;
+    //   } else {
+    //     node.x = 0;
+    //   }
+    // }
   }
 
   centerParents(node) {
@@ -393,8 +466,99 @@ class Tree extends Struct {
     }
   }
 
+  getNodeY(node) {
+    return this._getNodeY(node, this.root);
+  }
+
+  _getNodeY(node, root) {
+    if(node === this.root) {
+      return 0;
+    }
+
+    for(var i = 0; i < root.children.length; ++i) {
+      if(root.children[i]) {
+        if((root.children[i] === node)) {
+          return 1;
+        } else {
+          return 1 + this.getNodeY(root.children[i], node);
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  getLeftContour(node, modSum, values) {
+    var y = this.getNodeY(node);
+
+    if(values[y] === null || values[y] === undefined) {
+      values[y] = node.x + modSum;
+    } else {
+      values[y] = Math.min(values[y], node.x + modSum);
+    }
+
+    modSum += node.mod;
+
+    for(var i = 0; i < node.children.length; ++i) {
+      if(node.children[i]) {
+        this.getLeftContour(node.children[i], modSum, values);
+      }
+    }
+  }
+
+  getRightContour(node, modSum, values) {
+    var y = this.getNodeY(node);
+
+    if(values[y] === null || values[y] === undefined) {
+      values[y] = node.x + modSum;
+    } else {
+      values[y] = Math.max(values[y], node.x + modSum);
+    }
+
+    modSum += node.mod;
+
+    for(var i = 0; i < node.children.length; ++i) {
+      if(node.children[i]) {
+        this.getRightContour(node.children[i], modSum, values);
+      }
+    }
+  }
+
+  checkAllChildrenOnScreen(rootNode) {
+    var nodeContour = [];
+
+    this.getLeftContour(rootNode, 0, nodeContour);
+
+    var shiftAmount = 0;
+    for(var y = 0; y < nodeContour.length; ++y) {
+      if(nodeContour[y] + shiftAmount < 0) {
+        shiftAmount = nodeContour[y] * -1;
+      }
+    }
+
+    if(shiftAmount > 0) {
+      rootNode.x = (rootNode.x ? rootNode.x : 0);
+      rootNode.x += shiftAmount;
+
+      rootNode.mod = (rootNode.mod ? rootNode.mod : 0);
+      rootNode.mod += shiftAmount;
+    }
+  }
+
+  calculateFinalX(node, modSum) {
+    node.x += modSum;
+    modSum += node.mod;
+
+    for(var i = 0; i < node.children.length; ++i) {
+      if(node.children[i]) {
+        this.calculateFinalX(node.children[i], modSum);
+      }
+    }
+  }
+
   resetX(node) {
     node.x = 0;
+    node.mod = 0;
 
     for(var i = 0; i < node.children.length; ++i) {
       var child = node.children[i];
@@ -407,8 +571,12 @@ class Tree extends Struct {
   prepareTreeRender() {
     this.resetX(this.root);
     this.calcInitialX(this.root);
-    this.centerParents(this.root);
-    this.fixOverlaps(this.root);
+    this.checkAllChildrenOnScreen(this.root);
+    this.calculateFinalX(this.root, 0);
+    //this.centerParents(this.root);
+
+    //console.log(this.getNodeByRef("tree-2"))
+    //console.log(this.getNodeByRef("tree-4"))
   }
 
   fixOverlaps(node) {
