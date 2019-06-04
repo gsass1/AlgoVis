@@ -7,6 +7,19 @@ import Constants from './Constants';
 const DIRTY_TIME = 1.0;
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
+const isLeftMost = (node, parent) => {
+  if(parent === null) return true;
+
+  for(var i = 0; i < parent.children.length; ++i) {
+    if(parent.children[i] === node) {
+      var pi = i;
+      break;
+    }
+  }
+
+  return (pi == 0 || (parent.children[pi-1] == null));
+};
+
 class Node {
   constructor(props) {
     this.ref = props.ref;
@@ -383,25 +396,26 @@ class Tree extends Struct {
       if(pi == 0) {
         node.X = 0;
       } else {
-        node.x = p.children[pi - 1].x + 1 + 1;
+        if(p.children[pi - 1]) {
+          node.x = p.children[pi - 1].x + 1 + 1;
+        } else {
+          node.x = 1 + 1;
+        }
       }
     } else if(node.children.length == 1) {
-      if (pi == 0)
-      {
+      if(isLeftMost(node, p)) {
         node.x = node.children[0].x;
-      }
-      else
-      {
+      } else {
         node.x = p.children[pi - 1].x + 1 + 1;
         node.mod = node.x - node.children[0].x;
       } 
-    } else {
+    } else if(node.children[0]) {
       var leftChild = node.children[0];
       var rightChild = node.children[node.children.length - 1];
 
       var mid = (leftChild.x + rightChild.x) / 2.0;
 
-      if(pi == 0)
+      if(isLeftMost(node, p))
       {
         node.x = mid;
       }
@@ -573,10 +587,6 @@ class Tree extends Struct {
     this.calcInitialX(this.root);
     this.checkAllChildrenOnScreen(this.root);
     this.calculateFinalX(this.root, 0);
-    //this.centerParents(this.root);
-
-    //console.log(this.getNodeByRef("tree-2"))
-    //console.log(this.getNodeByRef("tree-4"))
   }
 
   fixOverlaps(node) {
