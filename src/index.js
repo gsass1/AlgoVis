@@ -251,6 +251,81 @@ let examples = [
     "}\n" +
     "\n" +
     "BST_Search(root, 40);\n"
+  },
+  {
+    name: "bstdelete",
+    code: "var tree = treeCreate('tree');\n" +
+    "var root = treeRoot(tree);\n" +
+    "\n" +
+    "nodeSet(root, 50);\n" +
+    "\n" +
+    "function BST_Insert(node, value) {\n" +
+    "  var nvalue = nodeValue(node);\n" +
+    "  if(value < nvalue) {\n" +
+    "    if(nodeLeft(node) != -1) {\n" +
+    "      BST_Insert(nodeLeft(node), value);\n" +
+        "} else {\n" +
+    "      nodeSetLeft(node, value);\n" +
+    "    }\n" +
+    "  } else if(value > nvalue) {\n" +
+    "    if(nodeRight(node) != -1) {\n" +
+    "      BST_Insert(nodeRight(node), value);\n" +
+    "    } else {\n" +
+    "      nodeSetRight(node, value);\n" +
+    "    }\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "BST_Insert(root, 40); \n" +
+    "BST_Insert(root, 20); \n" +
+    "BST_Insert(root, 30); \n" +
+    "BST_Insert(root, 13); \n" +
+    "function BST_DeleteNode(node, value) {\n" +
+    "  // base case \n" +
+    "  if (node == -1) return node; \n" +
+    "\n" +
+    "\n" +
+    "  var nvalue = nodeValue(node);\n" +
+    "\n" +
+    "  // If the key to be deleted is smaller than the root's key, \n" +
+    "  // then it lies in left subtree \n" +
+    "  if (value < nvalue) {\n" +
+    "    var left = nodeLeft(node);\n" +
+    "    nodeSetLeftFromRef(node, BST_DeleteNode(left, value));\n" +
+    "\n" +
+    "    // If the key to be deleted is greater than the root's key, \n" +
+    "    // then it lies in right subtree \n" +
+    "  } else if (value > nvalue)  {\n" +
+    "    var right = nodeRight(node);\n" +
+    "    nodeSetRightFromRef(node, BST_DeleteNode(right, value));\n" +
+    "  }\n" +
+    "\n" +
+    "  // if key is same as root's key, then This is the node \n" +
+    "  // to be deleted \n" +
+    "  else\n" +
+    "  { \n" +
+    "    // node with only one child or no child \n" +
+    "    if (nodeLeft(node) == -1) \n" +
+    "    { \n" +
+    "      return nodeRight(node); \n" +
+    "    } \n" +
+    "    else if (nodeRight(node) == -1) \n" +
+    "    { \n" +
+    "      return nodeLeft(node); \n" +
+    "    } \n" +
+    "\n" +
+    "    // node with two children: Get the inorder successor (smallest \n" +
+    "    // in the right subtree) \n" +
+    "    var temp = BST_MinValue(nodeRight(node)); \n" +
+    "    log(node);\n" +
+    "    nodeSet(node, nodeValue(temp));\n" +
+    "    nodeSetRightFromRef(node, BST_DeleteNode(nodeRight(node), nodeValue(temp)));\n" +
+    "  }\n" +
+    "\n" +
+      "return node;\n" +
+    "}\n" +
+    "\n" +
+    "BST_DeleteNode(root, 40);\n"
   }
 ];
 
