@@ -147,7 +147,7 @@ class Node {
     ctx.stroke();
     ctx.closePath();
 
-    ctx.font = fontSize + "px Arial";
+    ctx.font = Util.defaultFont(fontSize);
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
     ctx.fillText(this.value, targetPos.x + size/2, targetPos.y + size/1.5);
@@ -653,7 +653,8 @@ class Tree extends Struct {
     const offset = 200;
     const fontSize = 13;
     pos.x += offset;
-    ctx.font = fontSize + "px Arial";
+    ctx.font = Util.defaultFont(fontSize);
+
     ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
 
     this.prepareTreeRender();

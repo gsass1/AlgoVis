@@ -2,6 +2,10 @@ const lerpf = (a, b, t) => {
   return ((a) + ((b) - (a)) * (t));
 };
 
+const defaultFontStack = ["Liberation Mono", "Inconsolata"]
+  .map((x) => { return `\"${x}\"`; })
+  .join(",");
+
 export default {
   lerpf,
   smoothstep: (a) => {
@@ -19,12 +23,15 @@ export default {
   },
   randomColor: () => {
     return {
-      r: Math.floor(Math.random()*255),
-      g: Math.floor(Math.random()*200),
-      b: Math.floor(Math.random()*255),
+      r: Math.floor(Math.random()*128),
+      g: Math.floor(Math.random()*128),
+      b: Math.floor(Math.random()*128),
     }
   },
   cssFont: (size, font) => {
     return size + "px " + font;
+  },
+  defaultFont: (size) => {
+    return size + "px " + defaultFontStack;
   }
 };

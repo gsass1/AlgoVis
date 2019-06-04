@@ -174,7 +174,7 @@ class List extends Struct {
     const fontSize = 12*Constants.SCALE;
 
     ctx.fillStyle = Util.colorToCSS(this.color);
-    ctx.font = Util.cssFont(fontSize, "Arial");
+    ctx.font = Util.defaultFont(fontSize);
     ctx.fillText(this.getInfo(), pos.x, pos.y - boxMaxHeight);
 
     ctx.rect(pos.x, pos.y, 100, 100);
@@ -205,7 +205,8 @@ class List extends Struct {
       ctx.moveTo(x, y);
       ctx.fillRect(boxX, boxY - height, boxSize, height);
 
-      ctx.fillText(i, x, y + fontSize);
+      ctx.textAlign = "center";
+      ctx.fillText(i, x + boxSize/2, y + fontSize * 1.5);
     }
   }
 }

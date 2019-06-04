@@ -34,7 +34,7 @@ class Queue extends Struct {
     const dist = 10 * Constants.SCALE;
     const fontSize = 12 * Constants.SCALE;
 
-    ctx.font = fontSize + "px Arial";
+    ctx.font = Util.defaultFont(fontSize);
     ctx.fillStyle = Util.colorToCSS(this.color);
     ctx.fillText(this.getInfo(), pos.x, pos.y - 50);
 

@@ -96,7 +96,7 @@ class Graph extends Struct {
     for(var i = 0; i < this.edges.length; ++i) {
       const e = this.edges[i];
 
-      /* TODO: -this will not work when we can remove vertices */
+      /* TODO: this will not work when we can remove vertices */
       var v0Index = e.v0.id;
       var v1Index = e.v1.id;
 
