@@ -69,6 +69,53 @@ class Node {
     return offset + this.x * size;
   }
 
+  calculateLeftContour() {
+    var arr = [];
+
+    return this._calculateLeftContour(this, arr);
+  }
+
+  _calculateLeftContour(node, arr) {
+    for(var i = 0; i < node.children.length; ++i) {
+      if(node.children[i]) {
+        arr.push(node.children[i].x);
+        this._calculateLeftContour(node.children[i], arr);
+        break;
+      }
+    }
+
+    return arr;
+  }
+
+  calculateRightContour() {
+    var arr = [];
+
+    return this._calculateRightContour(this, arr);
+  }
+
+  _calculateRightContour(node, arr) {
+    for(var i = node.children.length - 1; i >= 0; --i) {
+      if(node.children[i]) {
+        arr.push(node.children[i].x);
+        this._calculateRightContour(node.children[i], arr);
+        break;
+      }
+    }
+
+    return arr;
+  }
+
+  adjustX(offset) {
+    this.x += offset;
+
+    for(var i = 0; i < this.children.length; ++i) {
+      var child = this.children[i];
+      if(child) {
+        child.adjustX(offset);
+      }
+    }
+  }
+
   render(pos, ctx, depth) {
     const size = 20*Constants.SCALE;
     const fontSize = 12*Constants.SCALE;
@@ -346,9 +393,82 @@ class Tree extends Struct {
     }
   }
 
+  resetX(node) {
+    node.x = 0;
+
+    for(var i = 0; i < node.children.length; ++i) {
+      var child = node.children[i];
+      if(child) {
+        this.resetX(child);
+      }
+    }
+  }
+
   prepareTreeRender() {
+    this.resetX(this.root);
     this.calcInitialX(this.root);
     this.centerParents(this.root);
+    this.fixOverlaps(this.root);
+  }
+
+  fixOverlaps(node) {
+    for(var i = 0; i < node.children.length; ++i) {
+      var rightChild = node.children[i];
+      if(rightChild === null || rightChild === undefined) {
+        continue;
+      }
+      var leftContour = rightChild.calculateLeftContour();
+
+      if(leftContour.length == 0) continue;
+
+      for(var j = 0; j < i; ++j) {
+        if(i == j) continue;
+
+        var leftChild = node.children[j];
+        if(leftChild === null || leftChild === undefined) {
+          continue;
+        }
+
+        var rightContour = leftChild.calculateRightContour();
+
+        if(rightContour.length == 0) continue;
+
+        var minLength = Math.min(leftContour.length, rightContour.length);
+        leftContour.slice(minLength);
+        rightContour.slice(minLength);
+
+        var minLeft = Math.min(leftContour);
+        var maxLeft = Math.max(leftContour);
+
+        var minRight = Math.min(rightContour);
+        var maxRight = Math.max(rightContour);
+
+        // (1, 5)
+        // (2, 4)
+        //
+        //
+        //        3-----5
+        //   
+        //
+        //    2-----4
+        //    |     |
+        // 1--2--3--4--5--6--7
+
+        if((minLeft <= maxRight) && (maxLeft <= minRight)) {
+          //console.log("overlap between ", rightChild, " and ", leftChild);
+          //console.log(minLeft, maxLeft);
+          //console.log(minRight, maxRight);
+          //rightChild.adjustX(1.5);
+
+          var dist = Math.abs(minLeft - minRight) + Math.abs(maxLeft - maxRight) + 1;
+          //console.log(dist);
+          //var dist = (minRight - maxLeft) + (maxLeft - minRight)
+          rightChild.adjustX(dist);
+        }
+      }
+
+      this.fixOverlaps(rightChild);
+    }
   }
 
   render(pos, ctx) {
