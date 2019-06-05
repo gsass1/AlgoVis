@@ -1,6 +1,7 @@
-import Struct from './Struct.js'
-import Util from './Util.js'
 import Audio from './Audio';
+import Position from './Position'
+import Struct from './Struct'
+import Util from './Util'
 
 import Constants from './Constants';
 
@@ -89,22 +90,19 @@ class Node {
     return offset + this.x * size;
   }
 
-  render(pos, ctx, depth) {
+  render(pos, r, depth) {
     const size = 20*Constants.SCALE;
     const fontSize = 12*Constants.SCALE;
 
     if(this.dirty) {
-      var color = Util.lerpColor(DIRTYCOLOR, this.tree.color, this.getDirtyPercentage());
+      var color = Util.lerpColor(Util.invertColor(this.tree.color), this.tree.color, this.getDirtyPercentage());
     } else {
       var color = this.tree.color;
     }
 
     var n = this.children.length;
 
-    var targetPos = {
-      x: pos.x + (this.x?this.x:0) * 80.0 * Constants.SCALE,
-      y: pos.y
-    };
+    const targetPos = new Position(pos.x + (this.x?this.x:0) * 80.0 * Constants.SCALE, pos.y);
 
     for(var i = 0; i < this.children.length; ++i) {
       var child = this.children[i];
@@ -115,43 +113,18 @@ class Node {
 
       var x = child.x * 80.0 * Constants.SCALE;
 
-      const lineTo = {
-        x: pos.x + x,
-        y: pos.y + 80*Constants.SCALE
-      };
+      const lineTo = new Position(pos.x + x, pos.y + 80*Constants.SCALE);
+      const childPos = new Position(pos.x, pos.y + 80*Constants.SCALE);
 
-      const childPos = {
-        x: pos.x,
-        y: pos.y + 80*Constants.SCALE
-      };
+      r.renderLine(targetPos.add(size/2, size/2), lineTo.add(size/2, size/2), color, 3);
 
-      ctx.beginPath();
-      ctx.moveTo(targetPos.x+size/2, targetPos.y+size/2);
-      ctx.lineTo(lineTo.x+size/2, lineTo.y+size/2);
-      ctx.closePath();
-
-      ctx.strokeStyle = Util.colorToCSS(color);
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      child.render(childPos, ctx, depth + 1);
+      child.render(childPos, r, depth + 1);
     }
 
-    ctx.beginPath();
-    ctx.arc(targetPos.x+size/2, targetPos.y+size/2, size, 0, 2 * Math.PI);
-    ctx.fillStyle = Util.colorToCSS(color);
-    ctx.fill();
+    r.renderFilledCircleOutlined(targetPos, color, {r: 255, g: 255, b:255}, size);
 
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "#fff";
-    ctx.stroke();
-    ctx.closePath();
-
-    ctx.font = Util.defaultFont(fontSize);
-    ctx.fillStyle = "#fff";
-    ctx.textAlign = "center";
-    ctx.fillText(this.value, targetPos.x + size/2, targetPos.y + size/1.5);
-
+    r.setDefaultFont(fontSize);
+    r.renderText(this.value, targetPos.add(size/2, size/1.5), { r: 255, g: 255, b: 255 }, "center");
   }
 }
 
@@ -159,23 +132,11 @@ class Tree extends Struct {
   constructor(props) {
     super(props);
 
-    this.color = props.color || Util.randomColor();
+    this.color = props.color || Util.randomColorLower();
     this.refCounter = 0;
     this.name = props.name || "Tree";
     this.children = [];
 
-    // this.root = this.createNode({
-    //     value: 0,
-    //     left: this.createNode({
-    //         value: 1,
-    //         left: this.createNode({value: 3}),
-    //         right: this.createNode({value: 4})
-    //     }),
-    //     right: this.createNode({
-    //         value: 2,
-    //         right: this.createNode({value: 5})
-    //     })
-    // });
     this.root = this.createNode({value: 0});
   }
 
@@ -649,17 +610,17 @@ class Tree extends Struct {
     }
   }
 
-  render(pos, ctx) {
+  render(pos, renderer) {
     const offset = 200;
-    const fontSize = 13;
-    pos.x += offset;
-    ctx.font = Util.defaultFont(fontSize);
+    const fontSize = 13 * Constants.SCALE;
 
-    ctx.fillText(this.getInfo(), pos.x - 10, pos.y - 20);
+    pos.x += offset;
+
+    renderer.setDefaultFont(fontSize);
+    renderer.renderText(this.getInfo(), pos.sub(10, 20), this.color);
 
     this.prepareTreeRender();
-
-    this.root.render(pos, ctx, 1);
+    this.root.render(pos, renderer, 1);
   }
 }
 

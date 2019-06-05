@@ -1,13 +1,12 @@
+import Constants from './Constants';
 import Struct from './Struct.js'
 import Util from './Util.js'
-
-import Constants from './Constants';
 
 class Queue extends Struct {
   constructor(props) {
     super(props);
 
-    this.color = props.color || Util.randomColor();
+    this.color = props.color || Util.randomColorUpper();
     this.name = props.name;
     this.q = [];
   }
@@ -21,36 +20,29 @@ class Queue extends Struct {
   }
 
   getInfo() {
-    return this.name + " (" + this.q.length + ")";
+    return `${this.name} (${this.q.length})`;
   }
 
   tick(dt) {
   }
 
-  render(pos, ctx) {
-    ctx.textAlign = "left";
-
-    const height = 40 * Constants.SCALE;
+  render(pos, r) {
+    const h = 40 * Constants.SCALE;
     const dist = 10 * Constants.SCALE;
     const fontSize = 12 * Constants.SCALE;
 
-    ctx.font = Util.defaultFont(fontSize);
-    ctx.fillStyle = Util.colorToCSS(this.color);
-    ctx.fillText(this.getInfo(), pos.x, pos.y - 50);
+    r.setDefaultFont(fontSize);
+    r.renderText(this.getInfo(), pos.sub(0, 50), this.color);
 
-
-    var x = pos.x;
     for(var i = 0; i < this.q.length; ++i) {
       var s = "" + this.q[i];
 
-      const width = s.length * fontSize;
-      ctx.fillStyle = Util.colorToCSS(this.color);
-      ctx.fillRect(x, pos.y, width, height);
+      const w = (s.length + 2) * fontSize;
+      r.renderFilledRect(pos, { w, h }, this.color);
 
-      ctx.fillStyle = "#000000";
-      ctx.fillText(s, x+20, pos.y+height/2);
+      r.renderText(s, pos.add(w / 2, h / 2), { r: 0, g: 0, b: 0 }, "center");
 
-      x += width + dist;
+      pos.x += w + dist;
     }
   }
 }

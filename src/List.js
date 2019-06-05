@@ -1,12 +1,15 @@
-import Struct from './Struct.js'
-import Util from './Util.js'
 import Audio from './Audio';
 import Constants from './Constants';
+import Position from './Position';
+import Struct from './Struct'
+import Util from './Util'
 
 const DIRTY_TIME = 1.0;
 const SWAPPING_TIME = 0.1;
 
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
+
+const MAX_VALUE = 100.0;
 
 class ArrayData {
   constructor(props) {
@@ -75,7 +78,7 @@ class List extends Struct {
     this.size = props.size;
     this.array = new Array(props.size);
     this.arrayData = new Array(props.size);
-    this.color = props.color || "#ffffff";
+    this.color = props.color || Util.randomColorUpper();
 
     for(let i = 0; i < props.size; ++i) {
       this.arrayData[i] = new ArrayData();
@@ -158,52 +161,51 @@ class List extends Struct {
 
   shuffle() {
     for(let i = 0; i < this.size; ++i) {
-      this.array[i] = Math.ceil(Math.random()*100);
+      this.array[i] = Math.ceil(Math.random() * MAX_VALUE);
       this.arrayData[i].value = this.array[i];
     }
   }
 
   getInfo() {
-    return this.name + " (" + this.size + ")";
+    return `${this.name} (${this.size})`;
   }
 
-  render(pos, ctx) {
-    const boxSize = 40*Constants.SCALE;
-    const boxDist = 45*Constants.SCALE;
-    const boxMaxHeight = 100*Constants.SCALE;
-    const fontSize = 12*Constants.SCALE;
+  render(pos, renderer) {
+    const w = 40 * Constants.SCALE;
+    const boxDist = 45 * Constants.SCALE;
+    const boxMaxh = 100 * Constants.SCALE;
+    const fontSize = 12 * Constants.SCALE;
 
-    ctx.fillStyle = Util.colorToCSS(this.color);
-    ctx.font = Util.defaultFont(fontSize);
-    ctx.fillText(this.getInfo(), pos.x, pos.y - boxMaxHeight);
+    renderer.setDefaultFont(fontSize);
+    renderer.renderText(this.getInfo(), { x: pos.x, y: pos.y - boxMaxh }, this.color);
+
+    const getBoxX = (i) => {
+      return pos.x + boxDist * i;
+    };
 
     for(var i = 0; i < this.size; ++i) {
-      var x = pos.x + boxDist * i;
+      var x = getBoxX(i); 
       var y = pos.y;
 
       if(this.arrayData[i].swapping) {
-        var originX = pos.x + boxDist * i;
-        var destX = pos.x + boxDist * (this.arrayData[i].swappingTo);
+        var originX = x;
+        var destX = getBoxX(this.arrayData[i].swappingTo);
+
         var boxX = Util.lerpf(originX, destX, Util.smoothstep(this.arrayData[i].getSwapPercentage()));
-        var boxY = pos.y;
       } else {
         var boxX = x;
-        var boxY = y;
       }
 
-      const height = Math.ceil(boxMaxHeight * (this.array[i] / 100.0));
+      const h = Math.ceil(boxMaxh * (this.array[i] / MAX_VALUE));
 
       if(this.arrayData[i].dirty) {
-        var interpColor = Util.lerpColor(DIRTYCOLOR, this.color, this.arrayData[i].getDirtyPercentage());
-        ctx.fillStyle = Util.colorToCSS(interpColor);
+        var color = Util.lerpColor(DIRTYCOLOR, this.color, this.arrayData[i].getDirtyPercentage());
       } else {
-        ctx.fillStyle = Util.colorToCSS(this.color);
+        var color = this.color;
       }
-      ctx.moveTo(x, y);
-      ctx.fillRect(boxX, boxY - height, boxSize, height);
 
-      ctx.textAlign = "center";
-      ctx.fillText(i, x + boxSize/2, y + fontSize * 1.5);
+      renderer.renderFilledRect({ x: boxX, y: y - h }, { w, h }, color);
+      renderer.renderText(i, { x: x + w / 2, y: y + fontSize * 1.5 }, color, "center");
     }
   }
 }

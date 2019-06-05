@@ -1,5 +1,5 @@
-import Struct from './Struct';
 import Constants from './Constants';
+import Struct from './Struct';
 
 class Vertex {
   constructor(props) {

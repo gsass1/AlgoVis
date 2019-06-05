@@ -1,10 +1,12 @@
 import Interpreter from 'js-interpreter'
+
+import Constants from './Constants';
 import Graph from './Graph';
 import List from './List';
-import Util from './Util';
-import Tree from './Tree';
+import Position from './Position';
 import Queue from './Queue';
-import Constants from './Constants';
+import Tree from './Tree';
+import Util from './Util';
 
 let testCode = document.getElementById("codearea").value;
 
@@ -29,7 +31,7 @@ const createInterpreter = (algovis, code) => {
 
     /* List functions */
     interp.setProperty(scope, 'listCreate', interp.createNativeFunction((name, size) => {
-      algovis.addObject(new List({name: name.data, size: size, color: Util.randomColor()}));
+      algovis.addObject(new List({name: name.data, size}));
       return name;
     }));
 
@@ -337,10 +339,7 @@ const createSelection = (start, end) => {
 class AlgoVis {
   constructor(props) {
     this.reset();
-    this.offset = {
-      x: 0,
-      y: 0
-    };
+    this.offset = new Position();
   }
 
   createInterpreter() {
@@ -437,15 +436,13 @@ class AlgoVis {
     });
   }
 
-  render(ctx) {
-    let pos = {
-      x: this.offset.x + 200*Constants.SCALE,
-      y: this.offset.y + 200*Constants.SCALE
-    }
+  render(renderer) {
+    let pos = this.offset.add(new Position(200, 200).mul(Constants.SCALE));
 
     this.objects.forEach((object) => {
-      object.render(pos, ctx);
-      pos.y += 400*Constants.SCALE;
+      object.render(pos.clone(), renderer);
+
+      pos.y += 400 * Constants.SCALE;
     });
   }
 }

@@ -23,9 +23,23 @@ export default {
   },
   randomColor: () => {
     return {
+      r: Math.floor(Math.random()*255),
+      g: Math.floor(Math.random()*255),
+      b: Math.floor(Math.random()*255),
+    }
+  },
+  randomColorLower: () => {
+    return {
       r: Math.floor(Math.random()*128),
       g: Math.floor(Math.random()*128),
       b: Math.floor(Math.random()*128),
+    }
+  },
+  randomColorUpper: () => {
+    return {
+      r: Math.floor(Math.random()*128)+127,
+      g: Math.floor(Math.random()*128)+127,
+      b: Math.floor(Math.random()*128)+127,
     }
   },
   cssFont: (size, font) => {
@@ -33,5 +47,22 @@ export default {
   },
   defaultFont: (size) => {
     return size + "px " + defaultFontStack;
+  },
+  clamp: (value, min, max) => {
+    return Math.min(Math.max(value, min), max);
+  },
+  invertColor: (c) => {
+    return {
+      r: 255 - c.r,
+      g: 255 - c.g,
+      b: 255 - c.b
+    };
+  },
+  shadeColor: (c) => {
+    return {
+      r: c.r * 0.75,
+      g: c.g * 0.75,
+      b: c.b * 0.75
+    };
   }
 };

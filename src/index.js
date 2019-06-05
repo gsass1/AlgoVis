@@ -1,6 +1,7 @@
 import AlgoVis from './AlgoVis'
 
 import List from './List.js'
+import Renderer from './Renderer.js'
 import Tree from './Tree.js'
 
 import Constants from './Constants.js';
@@ -11,7 +12,7 @@ var INTERPRETER_DELAY = 5;
 var ZOOM = 1;
 var ASPECT_RATIO = 1;
 
-const BG_COLOR = "#00000";
+const BG_COLOR = { r: 0, g: 0, b:0  };
 
 let defaultCode = "var l = listCreate('l', 10);\n" +
 "\n" +
@@ -345,6 +346,8 @@ document.querySelectorAll("a.example-btn").forEach(exampleBtn => {
 
 algovis.setupInterpreter();
 
+let renderer = new Renderer({ canvas });
+
 function mainLoop() {
   let canvas = document.getElementById("canvas")
   let ctx = canvas.getContext("2d");
@@ -360,11 +363,10 @@ function mainLoop() {
 
   Constants.SCALE = ASPECT_RATIO * ZOOM;
 
-  ctx.fillStyle = BG_COLOR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  renderer.fillScreen(BG_COLOR);
 
   algovis.tick(1.0/60.0);
-  algovis.render(ctx);
+  algovis.render(renderer);
 
   requestAnimationFrame(mainLoop);
 }
