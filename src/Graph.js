@@ -97,7 +97,7 @@ class Graph extends Struct {
     for(var i = 0; i < this.edges.length; ++i) {
       const e = this.edges[i];
 
-      if(e.getRef().split("-")[2] === ref) {
+      if(e.getRef() === ref) {
         return e;
       }
     }

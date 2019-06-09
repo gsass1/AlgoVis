@@ -19,10 +19,18 @@ const getTreeFromNodeRef = ref => {
   return String(ref).split("-")[0];
 }
 
+const getGraphFromRef = ref => {
+  return String(ref).split("-")[0];
+}
+
 const createInterpreter = (algovis, code) => {
   return new Interpreter(code, (interp, scope) => {
     interp.setProperty(scope, 'log', interp.createNativeFunction((msg) => {
       console.log(msg);
+    }));
+
+    interp.setProperty(scope, 'hint', interp.createNativeFunction((msg) => {
+      algovis.setHint(msg.data);
     }));
 
     interp.setProperty(scope, 'debugbreak', interp.createNativeFunction((asdasd) => {
@@ -312,6 +320,13 @@ const createInterpreter = (algovis, code) => {
       return interp.createPrimitive(edge.getRef());
     }));
 
+    interp.setProperty(scope, 'edgeGetWeight', interp.createNativeFunction((edgeRef) => {
+      const graph = algovis.getObject(getGraphFromRef(edgeRef.data));
+
+      const edge = graph.getEdgeByRef(edgeRef.data);
+
+      return interp.createPrimitive(edge.weight);
+    }));
 
     interp.setProperty(scope, 'graphEdgeCount', interp.createNativeFunction((graphName) => {
       const graph = algovis.getObject(graphName.data);
@@ -374,6 +389,7 @@ class AlgoVis {
   constructor(props) {
     this.reset();
     this.offset = new Position();
+    this.hint = "";
   }
 
   createInterpreter() {
@@ -470,6 +486,10 @@ class AlgoVis {
     });
   }
 
+  setHint(msg) {
+    this.hint = msg;
+  }
+
   render(renderer) {
     //let pos = this.offset.add(new Position(200, 200).mul(Constants.SCALE));
     let pos = this.offset.clone();
@@ -479,6 +499,14 @@ class AlgoVis {
 
       pos.y += 400 * Constants.SCALE;
     });
+
+    const hintSize = 40;
+
+    const hintPos = new Position(renderer.canvas.width / 2, renderer.canvas.height - hintSize * 2);
+
+    renderer.setDefaultFont(hintSize);
+
+    renderer.renderText(this.hint, hintPos, { r: 255, g: 255, b: 255 }, "center");
   }
 }
 
