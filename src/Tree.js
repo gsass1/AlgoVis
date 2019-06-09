@@ -136,6 +136,7 @@ class Tree extends Struct {
     this.refCounter = 0;
     this.name = props.name || "Tree";
     this.children = [];
+    this.binary = props.binary || false;
 
     this.root = this.createNode({value: 0});
   }
@@ -355,7 +356,7 @@ class Tree extends Struct {
     if(node.isLeaf())  {
       /* left-most */
       if(pi == 0) {
-        node.X = 0;
+        node.x = 0;
       } else {
         if(p.children[pi - 1]) {
           node.x = p.children[pi - 1].x + 1 + 1;
@@ -365,10 +366,17 @@ class Tree extends Struct {
       }
     } else if(node.children.length == 1) {
       if(isLeftMost(node, p)) {
-        node.x = node.children[0].x;
+        node.x = node.children[0].x + 1;
       } else {
         node.x = p.children[pi - 1].x + 1 + 1;
         node.mod = node.x - node.children[0].x;
+      } 
+    } else if(node.children.length == 2 && (node.children[0] === null || node.children[0] === undefined)) {
+      if(isLeftMost(node, p)) {
+        node.x = node.children[1].x - 1;
+      } else {
+        node.x = p.children[pi - 1].x + 1 + 1;
+        node.mod = node.x - node.children[1].x;
       } 
     } else if(node.children[0]) {
       var leftChild = node.children[0];

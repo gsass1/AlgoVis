@@ -348,18 +348,24 @@ algovis.setupInterpreter();
 
 let renderer = new Renderer({ canvas });
 
+let ctx = canvas.getContext("2d");
+
+ctx.canvas.width = window.innerWidth*0.75;
+ctx.canvas.height = 1 * ctx.canvas.width;
+
+algovis.offset.x = ctx.canvas.width/2;
+algovis.offset.y = ctx.canvas.height/2;
+
+algovis.offset = algovis.offset.sub(200, 200);
+
 function mainLoop() {
-  let canvas = document.getElementById("canvas")
-  let ctx = canvas.getContext("2d");
-
   ctx.canvas.width = window.innerWidth*0.75;
-
-  /* This is to keep the aspect ratio from fucking up */
-  //ctx.canvas.height = 1.5 * ctx.canvas.width;
   ctx.canvas.height = 1 * ctx.canvas.width;
 
-  //ASPECT_RATIO = ctx.canvas.width/1280.0;
-  ASPECT_RATIO = 1;
+  //ctx.canvas.width = 1 * ctx.canvas.height;
+
+  ASPECT_RATIO = ctx.canvas.width/1280.0;
+  //ASPECT_RATIO = 1;
 
   Constants.SCALE = ASPECT_RATIO * ZOOM;
 

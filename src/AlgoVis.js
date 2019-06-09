@@ -27,6 +27,8 @@ const createInterpreter = (algovis, code) => {
 
     interp.setProperty(scope, 'debugbreak', interp.createNativeFunction((asdasd) => {
       algovis.togglePause();
+
+      console.log(algovis.objects);
     }));
 
     /* List functions */
@@ -72,6 +74,11 @@ const createInterpreter = (algovis, code) => {
 
     interp.setProperty(scope, 'treeCreate', interp.createNativeFunction((name) => {
       algovis.addObject(new Tree({name: name.data, color: Util.randomColor()}));
+      return name;
+    }));
+
+    interp.setProperty(scope, 'binaryTreeCreate', interp.createNativeFunction((name) => {
+      algovis.addObject(new Tree({name: name.data, color: Util.randomColor(), binary: true}));
       return name;
     }));
 
@@ -437,7 +444,8 @@ class AlgoVis {
   }
 
   render(renderer) {
-    let pos = this.offset.add(new Position(200, 200).mul(Constants.SCALE));
+    //let pos = this.offset.add(new Position(200, 200).mul(Constants.SCALE));
+    let pos = this.offset.clone();
 
     this.objects.forEach((object) => {
       object.render(pos.clone(), renderer);
