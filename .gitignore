@@ -1,9 +1,9 @@
 node_modules
 yarn-error.log
-*.swp
 bundle.js
-"*.swp" 
-"*.swo" 
-"*.swl" 
-"*.swm" 
-"*.swn" 
+*.swp
+*.swo
+*.swl
+*.swm
+*.swn
+*.swk
