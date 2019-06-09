@@ -309,7 +309,27 @@ const createInterpreter = (algovis, code) => {
 
       const edge = graph.createEdge({ v0, v1, name: name.data, weight });
 
-      console.log(edge);
+      return interp.createPrimitive(edge.getRef());
+    }));
+
+
+    interp.setProperty(scope, 'graphEdgeCount', interp.createNativeFunction((graphName) => {
+      const graph = algovis.getObject(graphName.data);
+
+      return interp.createPrimitive(graph.edges.length);
+    }));
+
+    interp.setProperty(scope, 'graphVertexCount', interp.createNativeFunction((graphName) => {
+      const graph = algovis.getObject(graphName.data);
+
+      return interp.createPrimitive(graph.vertices.length);
+    }));
+
+    interp.setProperty(scope, 'graphGetEdge', interp.createNativeFunction((graphName, index) => {
+      const graph = algovis.getObject(graphName.data);
+      const edge = graph.edges[index];
+
+      edge.touch();
 
       return interp.createPrimitive(edge.getRef());
     }));

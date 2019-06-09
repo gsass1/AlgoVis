@@ -1,6 +1,10 @@
 import Constants from './Constants';
 import Position from './Position';
 import Struct from './Struct';
+import Util from './Util';
+
+const DIRTY_TIME = 1.0;
+const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 class Vertex {
   constructor(props) {
@@ -25,10 +29,31 @@ class Edge {
     this.graph = props.graph;
 
     this.weight = props.weight || 0;
+
+    this.dirty = false;
+    this.dirtyTicks = 0;
+  }
+
+  tick(dt) {
+    if (this.dirty) {
+      this.dirtyTicks -= dt;
+      if (this.dirtyTicks <= 0) {
+        this.dirty = false;
+      }
+    }
+  }
+
+  touch() {
+    this.dirty = true;
+    this.dirtyTicks = DIRTY_TIME;
   }
 
   getRef() {
     return this.graph.name + "-e-" + this.id;
+  }
+
+  getDirtyPercentage() {
+    return 1.0 - this.dirtyTicks / DIRTY_TIME;
   }
 }
 
@@ -111,6 +136,7 @@ class Graph extends Struct {
   }
 
   tick(dt) {
+    this.edges.forEach((e) => e.tick(dt));
   }
 
   render(pos, renderer) {
@@ -121,7 +147,8 @@ class Graph extends Struct {
     var edgesToDraw = [];
 
     const getVertexGridPos = (i) => {
-      const scalar = 150 * Constants.SCALE;
+      //const scalar = 150 * Constants.SCALE;
+      const scalar = 150;
       return new Position((i%5)*scalar, Math.floor(i/5)*scalar);
     };
 
@@ -131,7 +158,7 @@ class Graph extends Struct {
       var list = adjList[i];
       
       const v0 = this.vertices[i];
-      const pos0 = (v0.pos || getVertexGridPos(i));
+      const pos0 = (v0.pos || getVertexGridPos(i)).mul(Constants.SCALE);
 
       /* TODO: draw v0 at pos0 */
       //drawVertex(v0, pos0);
@@ -143,9 +170,9 @@ class Graph extends Struct {
         const edge = list[j];
 
         const v1 = this.vertices[j];
-        const pos1 = (v1.pos || getVertexGridPos(j));
+        const pos1 = (v1.pos || getVertexGridPos(j)).mul(Constants.SCALE);
 
-        verticesToDraw.push({ v: v1, vertexPos: pos1 });
+        verticesToDraw.push({ v: v1, vertexPos: pos1 })
 
         /* TODO: draw v1 at pos1 */
         //drawVertex(v1, pos1);
@@ -160,10 +187,16 @@ class Graph extends Struct {
       const drawEdge = (edge, a, b) => {
         renderer.setDefaultFont(10 * Constants.SCALE);
         
-        const middle = a.add(b.mul(0.5));
+        const middle = a.add((b.sub(a)).mul(0.5));
         renderer.renderText(edge.weight, middle.add(pos), { r: 255, g: 255, b: 255 }, "center");
 
-        renderer.renderLine(a.add(pos).add(size/2, size/2), b.add(pos).add(size/2,size/2), { r: 255, g: 255, b: 255 }, 3);
+        var color = { r: 255, g: 255, b: 255 };
+
+        if(edge.dirty) {
+          color = Util.lerpColor(DIRTYCOLOR, color, edge.getDirtyPercentage());
+        }
+
+        renderer.renderLine(a.add(pos).add(size/2, size/2), b.add(pos).add(size/2,size/2), color, 3);
       }
 
       drawEdge(e.edge, e.v0, e.v1);
