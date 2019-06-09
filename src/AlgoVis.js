@@ -281,14 +281,21 @@ const createInterpreter = (algovis, code) => {
       return name;
     }));
 
-    interp.setProperty(scope, 'addVertex', interp.createNativeFunction((graphName, name) => {
+    interp.setProperty(scope, 'addVertex', interp.createNativeFunction((graphName, name, x, y) => {
       const graph = algovis.getObject(graphName.data);
-      const vertex = graph.createVertex({ name: name.data });
+
+      var props = { name: name.data }
+
+      if(x && y) {
+        props = { ...props, pos: new Position(x, y) };
+      }
+
+      const vertex = graph.createVertex(props);
 
       return interp.createPrimitive(vertex.getRef());
     }));
 
-    interp.setProperty(scope, 'addEdge', interp.createNativeFunction((graphName, v0Ref, v1Ref, name) => {
+    interp.setProperty(scope, 'addEdge', interp.createNativeFunction((graphName, v0Ref, v1Ref, weight) => {
       const graph = algovis.getObject(graphName.data);
 
       const v0 = graph.getVertexByRef(v0Ref.data);
@@ -300,7 +307,7 @@ const createInterpreter = (algovis, code) => {
         };
       }
 
-      const edge = graph.createEdge({ v0, v1, name: name.data });
+      const edge = graph.createEdge({ v0, v1, name: name.data, weight });
 
       console.log(edge);
 

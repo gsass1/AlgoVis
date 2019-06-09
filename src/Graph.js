@@ -1,4 +1,5 @@
 import Constants from './Constants';
+import Position from './Position';
 import Struct from './Struct';
 
 class Vertex {
@@ -6,6 +7,7 @@ class Vertex {
     this.id = props.id;
     this.name = props.name || "";
     this.graph = props.graph;
+    this.pos = props.pos || null;
   }
 
   getRef() {
@@ -21,6 +23,8 @@ class Edge {
     this.id = props.id;
     this.name = props.name || "";
     this.graph = props.graph;
+
+    this.weight = props.weight || 0;
   }
 
   getRef() {
@@ -89,7 +93,7 @@ class Graph extends Struct {
       list.push(new Array(this.vertices.length));
 
       for(var j = 0; j < this.vertices.length; ++j) {
-        list[i][j] = 0;
+        list[i][j] = null;
       }
     }
 
@@ -100,7 +104,7 @@ class Graph extends Struct {
       var v0Index = e.v0.id;
       var v1Index = e.v1.id;
 
-      list[v0Index][v1Index] = 1;
+      list[v0Index][v1Index] = e;
     }
 
     return list;
@@ -109,68 +113,72 @@ class Graph extends Struct {
   tick(dt) {
   }
 
-  render(pos, ctx) {
+  render(pos, renderer) {
     var adjList = this.buildAdjacencyList();
     const size = 10 * Constants.SCALE;
 
+    var verticesToDraw = [];
+    var edgesToDraw = [];
+
     const getVertexGridPos = (i) => {
-      const scalar = 50* Constants.SCALE;
-      return {
-        x: (i%5)*scalar + pos.x,
-        y: Math.floor(i/5)*scalar + pos.y
-      };
+      const scalar = 150 * Constants.SCALE;
+      return new Position((i%5)*scalar, Math.floor(i/5)*scalar);
     };
 
-    const drawVertex = (vertex, pos) => {
-      ctx.beginPath();
-      ctx.arc(pos.x+size/2, pos.y+size/2, size, 0, 2 * Math.PI);
-      //ctx.fillStyle = Util.colorToCSS(color);
-      ctx.fillStyle = "#ff0000";
-      ctx.fill();
 
-      //ctx.lineWidth = 2;
-      //ctx.strokeStyle = "#fff";
-      //ctx.stroke();
-      ctx.closePath();
-    };
-
-    const drawEdge = (a, b) => {
-      ctx.beginPath();
-
-      ctx.moveTo(a.x + size/2, a.y + size/2);
-      ctx.lineTo(b.x + size/2, b.y + size/2);
-
-      ctx.closePath();
-
-      //ctx.strokeStyle = Util.colorToCSS(color);
-      ctx.strokeStyle = "#0000ff";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
 
     for(var i = 0; i < adjList.length; ++i) {
       var list = adjList[i];
       
-      const pos0 = getVertexGridPos(i);
-
       const v0 = this.vertices[i];
+      const pos0 = (v0.pos || getVertexGridPos(i));
 
       /* TODO: draw v0 at pos0 */
-      drawVertex(v0, pos0);
+      //drawVertex(v0, pos0);
+      verticesToDraw.push({ v: v0, vertexPos: pos0 });
 
       for(var j = 0; j < list.length; ++j) {
-        if(list[j] === 0) continue;
+        if(list[j] === null) continue;
 
-        const pos1 = getVertexGridPos(j);
+        const edge = list[j];
+
         const v1 = this.vertices[j];
+        const pos1 = (v1.pos || getVertexGridPos(j));
+
+        verticesToDraw.push({ v: v1, vertexPos: pos1 });
 
         /* TODO: draw v1 at pos1 */
-        drawVertex(v1, pos1);
+        //drawVertex(v1, pos1);
 
         /* TODO draw edge */
-        drawEdge(pos0, pos1);
+        //drawEdge(edge, pos0, pos1);
+        edgesToDraw.push({ edge, v0: pos0, v1: pos1 });
       }
     }
+
+    edgesToDraw.forEach((e) => {
+      const drawEdge = (edge, a, b) => {
+        renderer.setDefaultFont(10 * Constants.SCALE);
+        
+        const middle = a.add(b.mul(0.5));
+        renderer.renderText(edge.weight, middle.add(pos), { r: 255, g: 255, b: 255 }, "center");
+
+        renderer.renderLine(a.add(pos).add(size/2, size/2), b.add(pos).add(size/2,size/2), { r: 255, g: 255, b: 255 }, 3);
+      }
+
+      drawEdge(e.edge, e.v0, e.v1);
+    });
+
+    verticesToDraw.forEach((v) => {
+      const drawVertex = (vertex, vertexPos) => {
+        renderer.renderFilledCircleOutlined(vertexPos.add(pos), { r: 255, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }, size);
+
+        renderer.setDefaultFont(8 * Constants.SCALE);
+        renderer.renderText(vertex.name, vertexPos.add(pos).add(size/2, size/2), { r: 255, g: 255, b: 255 }, "center");
+      };
+
+      drawVertex(v.v, v.vertexPos);
+    });
   }
 }
 
