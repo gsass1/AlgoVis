@@ -1,11 +1,10 @@
-import Audio from './Audio';
 import Position from './Position'
 import Struct from './Struct'
+import Touchable from './Touchable'
 import Util from './Util'
 
 import Constants from './Constants';
 
-const DIRTY_TIME = 1.0;
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 const isLeftMost = (node, parent) => {
@@ -21,8 +20,10 @@ const isLeftMost = (node, parent) => {
   return (pi == 0 || (parent.children[pi-1] == null));
 };
 
-class Node {
+class Node extends Touchable {
   constructor(props) {
+    super(props);
+
     this.ref = props.ref;
     //this.value = Math.ceil(Math.random()*100);
     this.value = props.value;
@@ -37,8 +38,6 @@ class Node {
     if(this.right) this.children.push(this.right);
 
     this.tree = props.tree;
-    this.dirty = false;
-    this.dirtyTicks = 0;
   }
 
   addChild(node) {
@@ -46,26 +45,11 @@ class Node {
   }
 
   tick(dt) {
-    if(this.dirty) {
-      this.dirtyTicks -= dt;
-      if(this.dirtyTicks <= 0) {
-        this.dirty = false;
-      }
-    }
+    super.tick(dt);
   }
 
   isLeaf() {
     return this.children.length == 0;
-  }
-
-  getDirtyPercentage() {
-    return 1.0 - this.dirtyTicks / DIRTY_TIME;
-  }
-
-  touch() {
-    Audio.beep(this.value);
-    this.dirty = true;
-    this.dirtyTicks = DIRTY_TIME;
   }
 
   getLeft() {
@@ -143,6 +127,7 @@ class Tree extends Struct {
 
   static createRandomTree(props) {
     const tree = new Tree(props);
+    tree.root.value = Math.ceil(Math.random()*100);
     tree.makeRandomBranch(tree.root, props.depth || 2, props.maxChildCount || 3);
     return tree;
   }

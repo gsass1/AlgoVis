@@ -30,8 +30,8 @@ export default {
   },
   randomColorLower: () => {
     return {
-      r: Math.floor(Math.random()*128),
-      g: Math.floor(Math.random()*128),
+      r: Math.floor(Math.random()*64),
+      g: Math.floor(Math.random()*64),
       b: Math.floor(Math.random()*128),
     }
   },

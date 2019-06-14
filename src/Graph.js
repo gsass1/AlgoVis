@@ -1,6 +1,7 @@
 import Constants from './Constants';
 import Position from './Position';
 import Struct from './Struct';
+import Touchable from './Touchable';
 import Util from './Util';
 
 const DIRTY_TIME = 1.0;
@@ -19,8 +20,10 @@ class Vertex {
   }
 }
 
-class Edge {
+class Edge extends Touchable {
   constructor(props) {
+    super(props);
+
     this.v0 = props.v0;
     this.v1 = props.v1;
 
@@ -29,31 +32,20 @@ class Edge {
     this.graph = props.graph;
 
     this.weight = props.weight || 0;
-
-    this.dirty = false;
-    this.dirtyTicks = 0;
+    this.value = this.weight;
+    this.marked = false;
   }
 
   tick(dt) {
-    if (this.dirty) {
-      this.dirtyTicks -= dt;
-      if (this.dirtyTicks <= 0) {
-        this.dirty = false;
-      }
-    }
-  }
-
-  touch() {
-    this.dirty = true;
-    this.dirtyTicks = DIRTY_TIME;
+    super.tick(dt);
   }
 
   getRef() {
     return this.graph.name + "-e-" + this.id;
   }
 
-  getDirtyPercentage() {
-    return 1.0 - this.dirtyTicks / DIRTY_TIME;
+  mark() {
+    this.marked = true;
   }
 }
 
@@ -196,7 +188,11 @@ class Graph extends Struct {
           color = Util.lerpColor(DIRTYCOLOR, color, edge.getDirtyPercentage());
         }
 
-        renderer.renderLine(a.add(pos).add(size/2, size/2), b.add(pos).add(size/2,size/2), color, 3);
+        if(edge.marked) {
+          color = { r: 0, g: 0, b: 255 };
+        }
+
+        renderer.renderLine(a.add(pos).add(size/2, size/2), b.add(pos).add(size/2,size/2), color, 5);
       }
 
       drawEdge(e.edge, e.v0, e.v1);

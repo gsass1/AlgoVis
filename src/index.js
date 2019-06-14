@@ -32,7 +32,7 @@ if(document.getElementById("codearea").value === "") {
 }
 
 const updateInterpreterDelay = () => {
-  INTERPRETER_DELAY = 10 - document.getElementById("speedSlider").value;
+  INTERPRETER_DELAY = 30 - document.getElementById("speedSlider").value;
 }
 
 updateInterpreterDelay();
@@ -180,11 +180,17 @@ let examples = [
     "\n" +
     "var q = queueCreate('queue');\n" +
     "\n" +
+    "hint(\"Start with enqueueing the root node\");\n" +
     "enqueue(q, root);\n" +
     "\n" +
     "while(queueSize(q) != 0) {\n" +
+    "  hint(\"1. Dequeue the first node\");\n" +
+    "\n" +
     "  var tempNode = dequeue(q); \n" +
+    "\n" +
     "  for(var i = 0; i < nodeChildCount(tempNode); ++i) {\n" +
+    "    hint(\"2. Visit all children and enqueue them: \" + (i+1) + \"/\" + nodeChildCount(tempNode));\n" +
+    "\n" +
     "    var c = nodeGetChild(tempNode, i);\n" +
     "    nodeValue(c); // mark as visited\n" +
     "    enqueue(q, c); \n" +
@@ -327,6 +333,114 @@ let examples = [
     "}\n" +
     "\n" +
     "BST_DeleteNode(root, 40);\n"
+  },
+  {
+    name: "kruskal",
+    code: "var g = graphCreate('graph');\n" +
+"\n" +
+"var v0 = addVertex(g, 'v0', 100, -100);\n" +
+"var v1 = addVertex(g, 'v1', 0, 0);\n" +
+"var v2 = addVertex(g, 'v2', 100, 100);\n" +
+"var v3 = addVertex(g, 'v3', 200, -100);\n" +
+"var v4 = addVertex(g, 'v4', 200, 100);\n" +
+"var v5 = addVertex(g, 'v5', 200, 0);\n" +
+"var v6 = addVertex(g, 'v6', 300, -100);\n" +
+"var v7 = addVertex(g, 'v7', 300, 100);\n" +
+"var v8 = addVertex(g, 'v8', 400, 0);\n" +
+"\n" +
+"addEdge(g, v0, v1, 4);\n" +
+"addEdge(g, v1, v2, 8);\n" +
+"addEdge(g, v0, v2, 11);\n" +
+"addEdge(g, v2, v5, 7);\n" +
+"addEdge(g, v0, v3, 8);\n" +
+"addEdge(g, v2, v4, 1);\n" +
+"addEdge(g, v3, v5, 2);\n" +
+"addEdge(g, v5, v4, 6);\n" +
+"addEdge(g, v3, v7, 4);\n" +
+"addEdge(g, v3, v6, 7);\n" +
+"addEdge(g, v4, v7, 2);\n" +
+"addEdge(g, v6, v7, 14);\n" +
+"addEdge(g, v6, v8, 9);\n" +
+"addEdge(g, v7, v8, 10);\n" +
+"\n" +
+"function find(subsets, i) \n" +
+"{ \n" +
+"  if (subsets[i].parent != i) \n" +
+"    subsets[i].parent = find(subsets, subsets[i].parent); \n" +
+"\n" +
+"  return subsets[i].parent; \n" +
+"} \n" +
+"\n" +
+"function Union(subsets, x,y ) {\n" +
+"  xroot = find(subsets, x); \n" +
+"  yroot = find(subsets, y); \n" +
+"\n" +
+"  // Attach smaller rank tree under root of high  \n" +
+"  // rank tree (Union by Rank) \n" +
+"  if (subsets[xroot].rank < subsets[yroot].rank) \n" +
+"    subsets[xroot].parent = yroot; \n" +
+"  else if (subsets[xroot].rank > subsets[yroot].rank) \n" +
+"    subsets[yroot].parent = xroot; \n" +
+"\n" +
+"  else\n" +
+"  { \n" +
+"    subsets[yroot].parent = xroot; \n" +
+"    subsets[xroot].rank++; \n" +
+"  } \n" +
+"}\n" +
+"\n" +
+"function KruskalMST(g) { \n" +
+"  var n = graphEdgeCount(g);\n" +
+"  var result = [];\n" +
+"  var vertexCount = graphVertexCount(g);\n" +
+"\n" +
+"  var ei = 0;\n" +
+"  var i = 0;\n" +
+"\n" +
+"  var edgeCopy = []\n" +
+"  for(var j = 0; j < n; ++j) {\n" +
+"    var e = graphGetEdge(g, j);\n" +
+"    var w = edgeGetWeight(e);\n" +
+"\n" +
+"    edgeCopy.push({ e: e, w: w });\n" +
+"  }\n" +
+"\n" +
+"  edgeCopy.sort(function(a, b) {\n" +
+"    return a.w > b.w;\n" +
+"  });\n" +
+"\n" +
+"  var subsets = [];\n" +
+"  for(var v = 0; v < vertexCount; ++v) {\n" +
+"    subsets.push({\n" +
+"      parent: v,\n" +
+"      rank: 0,\n" +
+"    });\n" +
+"  }\n" +
+"\n" +
+"  while(ei < vertexCount - 1) {\n" +
+"    nextEdge = edgeCopy[i++];\n" +
+"\n" +
+"    var source = edgeGetSource(nextEdge.e);\n" +
+"    var dest = edgeGetDest(nextEdge.e);\n" +
+"\n" +
+"    edgeGetWeight(nextEdge.e);\n" +
+"\n" +
+"    var x = find(subsets, vertexGetId(source)); \n" +
+"    var y = find(subsets, vertexGetId(dest)); \n" +
+"\n" +
+"    if(x !== y) {\n" +
+"      ++ei;\n" +
+      "result.push(nextEdge);\n" +
+"      edgeMark(nextEdge.e);\n" +
+"\n" +
+"      Union(subsets, x, y); \n" +
+"    }\n" +
+"  }\n" +
+"\n" +
+"  return result;\n" +
+"} \n" +
+"\n" +
+"KruskalMST(g);\n"
   }
 ];
 

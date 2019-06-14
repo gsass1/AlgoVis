@@ -1,20 +1,19 @@
-import Audio from './Audio';
 import Constants from './Constants';
 import Position from './Position';
 import Struct from './Struct'
+import Touchable from './Touchable';
 import Util from './Util'
 
-const DIRTY_TIME = 1.0;
 const SWAPPING_TIME = 0.1;
 
 const DIRTYCOLOR = { r: 0, g: 255, b: 0 };
 
 const MAX_VALUE = 100.0;
 
-class ArrayData {
+class ArrayData extends Touchable {
   constructor(props) {
-    this.dirty = false;
-    this.dirtyTicks = 0;
+    super(props);
+
     this.swapping = false;
     this.value = 0;
 
@@ -24,12 +23,7 @@ class ArrayData {
   }
 
   tick(dt) {
-    if (this.dirty) {
-      this.dirtyTicks -= dt;
-      if (this.dirtyTicks <= 0) {
-        this.dirty = false;
-      }
-    }
+    super.tick(dt);
 
     if (this.swapping) {
       this.swappingTicks -= dt;
@@ -38,12 +32,6 @@ class ArrayData {
         this.finishedSwap = true;
       }
     }
-  }
-
-  touch() {
-    Audio.beep(this.value);
-    this.dirty = true;
-    this.dirtyTicks = DIRTY_TIME;
   }
 
   swapTo(i) {
@@ -64,10 +52,6 @@ class ArrayData {
 
   getSwapPercentage() {
     return 1.0 - this.swappingTicks / SWAPPING_TIME;
-  }
-
-  getDirtyPercentage() {
-    return 1.0 - this.dirtyTicks / DIRTY_TIME;
   }
 }
 

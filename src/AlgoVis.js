@@ -71,22 +71,22 @@ const createInterpreter = (algovis, code) => {
 
     /* Tree functions */
     interp.setProperty(scope, 'randomTree', interp.createNativeFunction((name, depth, maxChildCount) => {
-      algovis.addObject(Tree.createRandomTree({name: name.data, color: Util.randomColor(), depth, maxChildCount}));
+      algovis.addObject(Tree.createRandomTree({name: name.data, depth, maxChildCount}));
       return name;
     }));
 
     interp.setProperty(scope, 'randomBinaryTree', interp.createNativeFunction((name, depth) => {
-      algovis.addObject(Tree.createRandomTree({name: name.data, color: Util.randomColor(), depth: depth, maxChildCount: 2}));
+      algovis.addObject(Tree.createRandomTree({name: name.data, depth: depth, maxChildCount: 2}));
       return name;
     }));
 
     interp.setProperty(scope, 'treeCreate', interp.createNativeFunction((name) => {
-      algovis.addObject(new Tree({name: name.data, color: Util.randomColor()}));
+      algovis.addObject(new Tree({name: name.data}));
       return name;
     }));
 
     interp.setProperty(scope, 'binaryTreeCreate', interp.createNativeFunction((name) => {
-      algovis.addObject(new Tree({name: name.data, color: Util.randomColor(), binary: true}));
+      algovis.addObject(new Tree({name: name.data, binary: true}));
       return name;
     }));
 
@@ -315,17 +315,52 @@ const createInterpreter = (algovis, code) => {
         };
       }
 
+      weight = Math.floor(Math.random()*100);
+
       const edge = graph.createEdge({ v0, v1, name: name.data, weight });
+      //graph.createEdge({ v1, v0, name: name.data, weight });
 
       return interp.createPrimitive(edge.getRef());
+    }));
+
+    interp.setProperty(scope, 'vertexGetId', interp.createNativeFunction((vertexRef) => {
+      const graph = algovis.getObject(getGraphFromRef(vertexRef.data));
+
+      const vertex = graph.getVertexByRef(vertexRef.data);
+
+      return interp.createPrimitive(vertex.id);
     }));
 
     interp.setProperty(scope, 'edgeGetWeight', interp.createNativeFunction((edgeRef) => {
       const graph = algovis.getObject(getGraphFromRef(edgeRef.data));
 
       const edge = graph.getEdgeByRef(edgeRef.data);
+      edge.touch();
 
       return interp.createPrimitive(edge.weight);
+    }));
+
+    interp.setProperty(scope, 'edgeGetSource', interp.createNativeFunction((edgeRef) => {
+      const graph = algovis.getObject(getGraphFromRef(edgeRef.data));
+
+      const edge = graph.getEdgeByRef(edgeRef.data);
+
+      return interp.createPrimitive(edge.v0.getRef());
+    }));
+
+    interp.setProperty(scope, 'edgeGetDest', interp.createNativeFunction((edgeRef) => {
+      const graph = algovis.getObject(getGraphFromRef(edgeRef.data));
+
+      const edge = graph.getEdgeByRef(edgeRef.data);
+
+      return interp.createPrimitive(edge.v1.getRef());
+    }));
+
+    interp.setProperty(scope, 'edgeMark', interp.createNativeFunction((edgeRef) => {
+      const graph = algovis.getObject(getGraphFromRef(edgeRef.data));
+
+      const edge = graph.getEdgeByRef(edgeRef.data);
+      edge.mark();
     }));
 
     interp.setProperty(scope, 'graphEdgeCount', interp.createNativeFunction((graphName) => {
