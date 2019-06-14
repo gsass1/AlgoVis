@@ -441,8 +441,33 @@ document.querySelectorAll("a.example-btn").forEach(exampleBtn => {
   }
 });
 
-if(document.getElementById("codearea").value === "") {
-  loadExample("kruskal");
+/**
+ * Get the URL parameters
+ * source: https://css-tricks.com/snippets/javascript/get-url-variables/
+ * @param  {String} url The URL
+ * @return {Object}     The URL parameters
+ */
+var getParams = function (url) {
+	var params = {};
+	var parser = document.createElement('a');
+	parser.href = url;
+	var query = parser.search.substring(1);
+	var vars = query.split('&');
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+		params[pair[0]] = decodeURIComponent(pair[1]);
+	}
+	return params;
+};
+
+var params = getParams(window.location.href);
+
+if(params["example"]) {
+  loadExample(params["example"]);
+} else {
+  if(document.getElementById("codearea").value === "") {
+    loadExample("kruskal");
+  }
 }
 
 algovis.setupInterpreter();
