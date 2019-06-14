@@ -160,25 +160,6 @@ class Tree extends Struct {
     return this._getNodeByRef(ref, this.root);
   }
 
-  //     _getNodeByRef(ref, node) {
-  //         if(node === null || node === undefined) {
-  //             return null;
-  //         }
-
-  //         if(node.ref == ref) {
-  //             return node;
-  //         }
-
-  //         var left = this._getNodeByRef(ref, node.left);
-  //         if(left) return left;
-
-  //         var right = this._getNodeByRef(ref, node.right);
-  //         if(right) return right;
-
-  //         return null;
-  //     }
-
-
   _getNodeByRef(ref, node) {
     if(node === null || node === undefined) {
       return null;
@@ -198,22 +179,6 @@ class Tree extends Struct {
 
     return null;
   }
-
-//   forEachPreOrder(cb) {
-//     _forEachPreOrder(this.root, cb):
-//   }
-
-//   _forEachPreOrder(node, cb) {
-//     cb(node);
-
-//     for(var i = 0; i < node.children.length; ++i) {
-//       var c = node.children[i];
-
-//       if(c) {
-//         this._forEachPreOrder(c, cb);
-//       }
-//     }
-//   }
 
   getInfo() {
     return this.name;
@@ -284,7 +249,6 @@ class Tree extends Struct {
       var siblingContour = [];
       this.getRightContour(sibling, 0, siblingContour);
 
-      //for (var level = this.getNodeY(node.Y) + 1; level <= Math.Min(siblingContour.Keys.Max(), nodeContour.Keys.Max()); ++level)
       for (var level = this.getNodeY(node.Y) + 1; level <= Math.min(siblingContour.length, nodeContour.length); ++level)
       {
         var nodeLevel = nodeContour[level] ? nodeContour[level] : 0;
@@ -383,39 +347,6 @@ class Tree extends Struct {
     if(node.children.length > 0 && pi != 0) {
       this.checkForConflicts(node);
     }
-
-    // if(node === this.root) {
-    //   return;
-    // }
-
-    // var p = this.findParentOf(node, this.root);
-
-    // if(!p && node != this.root) {
-    //   alert("oops");
-    // }
-
-    // var pi = -1;
-    // for(var i = 0; i < p.children.length; ++i) {
-    //   if(p.children[i] === node) {
-    //     pi = i;
-    //     break;
-    //   }
-    // }
-
-    // if(pi < 0) {
-    //   return;
-    // }
-
-    // /* left-most */
-    // if(pi == 0) {
-    //   node.x = 0;
-    // } else {
-    //   if(p.children[i - 1]) {
-    //     node.x = p.children[i - 1].x + 1;
-    //   } else {
-    //     node.x = 0;
-    //   }
-    // }
   }
 
   centerParents(node) {
@@ -541,66 +472,6 @@ class Tree extends Struct {
     this.calcInitialX(this.root);
     this.checkAllChildrenOnScreen(this.root);
     this.calculateFinalX(this.root, 0);
-  }
-
-  fixOverlaps(node) {
-    for(var i = 0; i < node.children.length; ++i) {
-      var rightChild = node.children[i];
-      if(rightChild === null || rightChild === undefined) {
-        continue;
-      }
-      var leftContour = rightChild.calculateLeftContour();
-
-      if(leftContour.length == 0) continue;
-
-      for(var j = 0; j < i; ++j) {
-        if(i == j) continue;
-
-        var leftChild = node.children[j];
-        if(leftChild === null || leftChild === undefined) {
-          continue;
-        }
-
-        var rightContour = leftChild.calculateRightContour();
-
-        if(rightContour.length == 0) continue;
-
-        var minLength = Math.min(leftContour.length, rightContour.length);
-        leftContour.slice(minLength);
-        rightContour.slice(minLength);
-
-        var minLeft = Math.min(leftContour);
-        var maxLeft = Math.max(leftContour);
-
-        var minRight = Math.min(rightContour);
-        var maxRight = Math.max(rightContour);
-
-        // (1, 5)
-        // (2, 4)
-        //
-        //
-        //        3-----5
-        //   
-        //
-        //    2-----4
-        //    |     |
-        // 1--2--3--4--5--6--7
-
-        if((minLeft <= maxRight) && (maxLeft <= minRight)) {
-          //console.log("overlap between ", rightChild, " and ", leftChild);
-          //console.log(minLeft, maxLeft);
-          //console.log(minRight, maxRight);
-          //rightChild.adjustX(1.5);
-
-          var dist = Math.abs(minLeft - minRight) + Math.abs(maxLeft - maxRight) + 1;
-          //console.log(dist);
-          //var dist = (minRight - maxLeft) + (maxLeft - minRight)
-          rightChild.adjustX(dist);
-        }
-      }
-
-      this.fixOverlaps(rightChild);
-    }
   }
 
   render(pos, renderer) {

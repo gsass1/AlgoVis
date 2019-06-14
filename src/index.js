@@ -14,23 +14,6 @@ var ASPECT_RATIO = 1;
 
 const BG_COLOR = { r: 0, g: 0, b:0  };
 
-let defaultCode = "var l = listCreate('l', 10);\n" +
-"\n" +
-"//Bubble sort\n" +
-"for (var i = 0; i < listSize(l) - 1; i++) {\n" +
-"  for (var j = 0; j < listSize(l) - i - 1; j++) {\n" +
-"    var p = listGet(l, j);\n" +
-"    var q = listGet(l, j + 1);\n" +
-"    if (p > q) {\n" +
-"      listSwap(l, j, j + 1);\n" +
-"    }\n" +
-"  }\n" +
-"}";
-
-if(document.getElementById("codearea").value === "") {
-  document.getElementById("codearea").value = defaultCode;
-}
-
 const updateInterpreterDelay = () => {
   INTERPRETER_DELAY = 30 - document.getElementById("speedSlider").value;
 }
@@ -457,6 +440,10 @@ document.querySelectorAll("a.example-btn").forEach(exampleBtn => {
     loadExample(exampleBtn.getAttribute("data-example"));
   }
 });
+
+if(document.getElementById("codearea").value === "") {
+  loadExample("kruskal");
+}
 
 algovis.setupInterpreter();
 
