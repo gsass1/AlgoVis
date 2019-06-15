@@ -1,6 +1,15 @@
-# API
+# API Documentation
 
-To serve as a reference guide for programming using AlgoVis' data structures.
+Due to limitation of the interpreter using, AlgoVis only has a C-like API. The user
+receives opaque objects and functions have to be used even for simple data-retrieval.
+
+Therefore one has to write `listSize(list)` instead of simply writing `list.size` or `list.getSize()`.
+A new interpreter or a transpiler that could convert the latter to the former could be a possible solution.
+
+## Objects
+
+Objects are always referenced by their name, a string.
+
 
 ## Lists
 
@@ -124,3 +133,57 @@ To serve as a reference guide for programming using AlgoVis' data structures.
 ### queueSize(q)
 
 >Returns the amount of objects in the queue `q`
+
+## Graphs
+
+### graphCreate(name)
+
+>Creates a new empty graph. Returns `name`.
+
+### graphEdgeCount(graph)
+
+>Returns the amount of edges of `graph`
+
+### graphVertexCount(graph)
+
+>Returns the amount of vertices of `graph`
+
+### graphGetEdge(graph, i)
+
+>Returns the ith edge of `graph`
+
+## Vertices
+
+### addVertex(graph, name, opt:x, opt:y)
+
+>Creates a new vertex and adds it to the graph. Returns `name`.
+
+### vertexGetId(vertex)
+
+>Returns the ID of `vertex`
+
+## Edges
+
+### edgeGetWeight(edge)
+
+>Returns the weight of `edge`
+
+### edgeGetSource(edge)
+
+>Returns the source vertex reference of `edge`
+
+### edgeGetDest(edge)
+
+>Returns the destination vertex reference of `edge`
+
+### edgeMark(edge)
+
+## Debugging
+
+### log(msg)
+
+>Prints `msg` to the console
+
+### debugbreak()
+
+>Stops execution until it is resumed again

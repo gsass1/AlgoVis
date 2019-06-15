@@ -8,13 +8,6 @@ import Queue from './Queue';
 import Tree from './Tree';
 import Util from './Util';
 
-let testCode = document.getElementById("codearea").value;
-
-
-const deepCopy = obj => {
-  return JSON.parse(JSON.stringify(obj))
-};
-
 const getTreeFromNodeRef = ref => {
   return String(ref).split("-")[0];
 }
