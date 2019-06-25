@@ -149,7 +149,7 @@ const main = () => {
 
   const keepCanvasAspectRatio = () => {
     ctx.canvas.width = window.innerWidth*0.75;
-    ctx.canvas.height = 1 * ctx.canvas.width;
+    ctx.canvas.height = window.innerHeight - 150 - 70;
   };
 
   keepCanvasAspectRatio();
@@ -163,7 +163,8 @@ const main = () => {
     keepCanvasAspectRatio();
 
     /* FIXME: this sucks */
-    ASPECT_RATIO = ctx.canvas.width/1280.0;
+    //ASPECT_RATIO = ctx.canvas.width/1280.0;
+    ASPECT_RATIO = 1;
     Constants.SCALE = ASPECT_RATIO * ZOOM;
 
     renderer.fillScreen(BG_COLOR);
