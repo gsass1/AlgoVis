@@ -13,6 +13,26 @@ const BG_COLOR = { r: 0, g: 0, b:0  };
 const algovis = new AlgoVis();
 const canvas = document.getElementById("canvas");
 
+var showFooter = localStorage.getItem('showFooter') === "true";
+
+const setFooterVisibility = (visible) => {
+  if(visible) {
+    document.getElementById("footer").style.display = "inherit";
+    document.getElementById("algovis").style.height = "calc(100vh - 70px - 150px)";
+  } else {
+    document.getElementById("algovis").style.height = "calc(100vh - 70px)";
+    document.getElementById("footer").style.display = "none";
+  }
+};
+
+setFooterVisibility(showFooter);
+
+const toggleFooter = () => {
+  showFooter = !showFooter;
+  localStorage.setItem('showFooter', showFooter);
+  setFooterVisibility(showFooter);
+};
+
 const loadExample = (name) => {
   Examples.forEach((example) => {
     if(example.name === name) {
@@ -30,6 +50,10 @@ const setupDOMEvents = () => {
 
   document.getElementById("speedSlider").onchange = function(e) {
     updateInterpreterDelay();
+  };
+
+  document.getElementById("btnToggleFooter").onclick = e => {
+    toggleFooter();
   };
 
 
@@ -149,7 +173,7 @@ const main = () => {
 
   const keepCanvasAspectRatio = () => {
     ctx.canvas.width = window.innerWidth*0.75;
-    ctx.canvas.height = window.innerHeight - 150 - 70;
+    ctx.canvas.height = window.innerHeight - (showFooter ? 150 : 0) - 70;
   };
 
   keepCanvasAspectRatio();
