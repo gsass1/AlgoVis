@@ -4,8 +4,6 @@ AlgoVis is an algorithm visualizer designed to simulate complex algorithms using
 
 ![AlgoVis](https://user-images.githubusercontent.com/4589491/60400540-908ab880-9b75-11e9-9d26-5b83879fa758.PNG)
 
-The current goal is to implement the following data structures using integer data values:
-
 User code is written in JavaScript which is interpreted by [JS-Interpreter](https://github.com/NeilFraser/JS-Interpreter). All simulation and interpretation is handled on the client-side, making this app serverless.
 
 ## Development
