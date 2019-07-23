@@ -64,12 +64,15 @@ class List extends Struct {
     this.arrayData = new Array(props.size);
     this.color = props.color || Util.randomColorUpper();
 
+    console.log(props.size);
+
     for(let i = 0; i < props.size; ++i) {
       this.arrayData[i] = new ArrayData();
       this.array[i] = 0;
     }
 
     this.shuffle();
+    console.log(this.arrayData);
   }
 
   tick(dt) {

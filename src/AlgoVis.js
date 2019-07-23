@@ -34,7 +34,7 @@ const createInterpreter = (algovis, code) => {
 
     /* List functions */
     interp.setProperty(scope, 'listCreate', interp.createNativeFunction((name, size) => {
-      algovis.addObject(new List({name: name.data, size}));
+      algovis.addObject(new List({name: name.data, size: size.data}));
       return name;
     }));
 
@@ -51,7 +51,7 @@ const createInterpreter = (algovis, code) => {
     }));
 
     interp.setProperty(scope, 'listAdd', interp.createNativeFunction((name, value) => {
-      algovis.getObject(name.data).add(value);
+      algovis.getObject(name.data).add(value.data);
     }));
 
     interp.setProperty(scope, 'listSize', interp.createNativeFunction((name, value) => {

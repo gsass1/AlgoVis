@@ -324,5 +324,79 @@ export default [
 "} \n" +
 "\n" +
 "KruskalMST(g);\n"
+  },
+  {
+    name: "bstrebalance",
+    code: "var tree = treeCreate('tree');\n" +
+"var root = treeRoot(tree);\n" +
+"\n" +
+"nodeSet(root, 50);\n" +
+"\n" +
+"function BST_Insert(node, value) {\n" +
+"  var nvalue = nodeValue(node);\n" +
+"  if(value < nvalue) {\n" +
+"    if(nodeLeft(node) != -1) {\n" +
+"      BST_Insert(nodeLeft(node), value);\n" +
+"    } else {\n" +
+"      nodeSetLeft(node, value);\n" +
+"    }\n" +
+"  } else if(value > nvalue) {\n" +
+"    if(nodeRight(node) != -1) {\n" +
+"      BST_Insert(nodeRight(node), value);\n" +
+"    } else {\n" +
+"      nodeSetRight(node, value);\n" +
+"    }\n" +
+"  }\n" +
+"}\n" +
+"\n" +
+"for(var i = 0; i < 6; ++i) {\n" +
+"    BST_Insert(root, Math.floor(Math.random() * 100)); \n" +
+"}\n" +
+"\n" +
+"function InOrderDFT(node, sortedNodes) {\n" +
+"  if(nodeLeft(node) != -1) {\n" +
+"    InOrderDFT(nodeLeft(node), sortedNodes);\n" +
+"  }\n" +
+"\n" +
+"  listAdd(sortedNodes, nodeValue(node));\n" +
+"\n" +
+"  if(nodeRight(node) != -1) {\n" +
+"    InOrderDFT(nodeRight(node), sortedNodes);\n" +
+"  }\n" +
+"}\n" +
+"\n" +
+"function CreateTreeFromArr(sortedNodes, parent, start, end) {\n" +
+"  if(start >= end) return -1;\n" +
+"\n" +
+"  var middle = Math.floor((start + end) / 2);\n" +
+"\n" +
+"  nodeSet(parent, listGet(sortedNodes, middle));\n" +
+"  \n" +
+"  nodeSetLeft(parent, 0);\n" +
+"  var leftValue = CreateTreeFromArr(sortedNodes, nodeLeft(parent), start, middle);\n" +
+"  if(leftValue == -1) {\n" +
+"    nodeRemoveLeft(parent);\n" +
+"  }\n" +
+"\n" +
+"  nodeSetRight(parent, 0);\n" +
+"  var rightValue = CreateTreeFromArr(sortedNodes, nodeRight(parent), middle + 1, end);\n" +
+"  if(rightValue == -1) {\n" +
+"    nodeRemoveRight(parent);\n" +
+"  }\n" +
+"\n" +
+"  return listGet(sortedNodes, middle);\n" +
+"}\n" +
+"\n" +
+"function Rebalance(node) {\n" +
+"  var sortedNodes = listCreate('sortedNodes', 0);\n" +
+"\n" +
+"  InOrderDFT(node, sortedNodes);\n" +
+"\n" +
+"  var balancedTree = treeCreate('balancedTree');\n" +
+"  CreateTreeFromArr(sortedNodes, treeRoot(balancedTree), 0, listSize(sortedNodes));\n" +
+"  \n" +
+"}\n" +
+"\n" +
+"Rebalance(root);\n"
   }
 ];

@@ -27,7 +27,7 @@ class Node extends Touchable {
     this.ref = props.ref;
     //this.value = Math.ceil(Math.random()*100);
     this.value = props.value;
-    this.children = new Array(0);
+    this.children = [];
     this.left = props.left || null;
     this.right = props.right || null;
 
@@ -64,10 +64,24 @@ class Node extends Touchable {
 
   setLeft(node) {
     this.children[0] = node;
+
+    if(node == null && this.children.length == 1) {
+      this.children = [];
+    }
   }
 
   setRight(node) {
     this.children[1] = node;
+
+    if(node == null && this.children.length == 1) {
+      this.children = [];
+    } else if(node == null && this.children.length == 2) {
+      if(this.children[0]) {
+        this.children = [this.children[0]];
+      } else {
+        this.children = [];
+      }
+    }
   }
 
   getXPos(offset) {
@@ -281,6 +295,8 @@ class Tree extends Struct {
         this.calcInitialX(c);
       }
     }
+
+    //console.log(node);
 
     if(node !== this.root) {
       var p = this.findParentOf(node, this.root);
