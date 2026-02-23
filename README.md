@@ -10,9 +10,29 @@ User code is written in JavaScript which is interpreted by [JS-Interpreter](http
 
 ## Development
 
-Install the required the packages with `yarn`
+Install dependencies:
 
-Then run the webpack server with `yarn run serv`
+```
+npm install
+```
+
+Start the development server:
+
+```
+npm run dev
+```
+
+Build for production:
+
+```
+npm run build
+```
+
+Preview the production build:
+
+```
+npm run preview
+```
 
 ## Using AlgoVis
 
