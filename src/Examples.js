@@ -57,6 +57,39 @@ export default [
     "quicksort(0, listLength(list));\n"
   },
   {
+    name: "heapsort",
+    code: "var list = listCreate('List', 10);\n" +
+    "var n = listLength(list);\n" +
+    "\n" +
+    "function heapify(size, i) {\n" +
+    "  var largest = i;\n" +
+    "  var left = 2 * i + 1;\n" +
+    "  var right = 2 * i + 2;\n" +
+    "\n" +
+    "  if (left < size && listGet(list, left) > listGet(list, largest)) {\n" +
+    "    largest = left;\n" +
+    "  }\n" +
+    "\n" +
+    "  if (right < size && listGet(list, right) > listGet(list, largest)) {\n" +
+    "    largest = right;\n" +
+    "  }\n" +
+    "\n" +
+    "  if (largest != i) {\n" +
+    "    listSwap(list, i, largest);\n" +
+    "    heapify(size, largest);\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "for (var i = Math.floor(n / 2) - 1; i >= 0; i--) {\n" +
+    "  heapify(n, i);\n" +
+    "}\n" +
+    "\n" +
+    "for (var i = n - 1; i > 0; i--) {\n" +
+    "  listSwap(list, 0, i);\n" +
+    "  heapify(i, 0);\n" +
+    "}\n"
+  },
+  {
     name: "breadthfirstsearch",
     code: "var tree = randomTree('tree');\n" +
     "var root = treeRoot(tree);\n" +
